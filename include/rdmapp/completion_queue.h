@@ -45,9 +45,9 @@ namespace rdmapp
       }
 
      private:
-      std::shared_ptr<rdmapp::device> device_{};
+      std::shared_ptr<rdmapp::device> device{};
       size_t num_cqe{128};
-      std::unique_ptr<ibv_cq, cq_deleter> cq_{make_cq(device_, num_cqe)};
+      std::unique_ptr<ibv_cq, cq_deleter> cq_{make_cq(device, num_cqe)};
       friend struct qp;
 
      public:
@@ -57,7 +57,7 @@ namespace rdmapp
        * @param device The device to use.
        * @param num_cqe The number of completion entries to allocate.
        */
-      completion_queue(std::shared_ptr<device> device, size_t num_cqe = 128) : device_(device), num_cqe(num_cqe) {}
+      completion_queue(std::shared_ptr<rdmapp::device> device, size_t num_cqe = 128) : device(device), num_cqe(num_cqe) {}
 
       /**
        * @brief Poll the completion queue.
