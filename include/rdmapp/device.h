@@ -7,8 +7,10 @@
 #include <cstdio>
 #include <cstring>
 #include <iterator>
+#include <span>
 #include <stdexcept>
 #include <string>
+#include <memory>
 
 #include "rdmapp/detail/debug.h"
 #include "rdmapp/detail/noncopyable.h"
@@ -16,51 +18,31 @@
 
 namespace rdmapp
 {
+   struct device_list_deleter {
+      void operator()(ibv_device** ptr) const {
+         if (ptr) {
+            ::ibv_free_device_list(ptr);
+         }
+      }
+   };
+
    // This class holds a list of devices available on the system.
    struct device_list : public noncopyable
    {
-     private:
-      struct ibv_device** devices_{};
-      size_t nr_devices_{};
-
-     public:
-      class iterator : public std::iterator<std::forward_iterator_tag, struct ibv_device*>
-      {
-         friend struct device_list;
-         size_t i_;
-         struct ibv_device** devices_;
-         iterator(struct ibv_device** devices, size_t i);
-
-        public:
-         struct ibv_device*& operator*();
-         bool operator==(const device_list::iterator& other) const;
-         bool operator!=(const device_list::iterator& other) const;
-         device_list::iterator& operator++();
-         device_list::iterator& operator++(int);
-      };
+      std::span<ibv_device*> devices{};
+      std::unique_ptr<ibv_device*, device_list_deleter> device_list_ptr{};
 
       device_list()
       {
-         int32_t nr_devices = -1;
-         devices_ = ::ibv_get_device_list(&nr_devices);
-         if (nr_devices == 0) {
-            ::ibv_free_device_list(devices_);
+         int32_t n_devices = -1;
+         device_list_ptr.reset(::ibv_get_device_list(&n_devices));
+         if (n_devices == 0) {
             throw std::runtime_error("no Infiniband devices found");
          }
-         check_ptr(devices_, "failed to get Infiniband devices");
-         nr_devices_ = nr_devices;
-      }
-
-      size_t size() { return nr_devices_; }
-      struct ibv_device* at(size_t i);
-      iterator begin();
-      iterator end();
-
-      ~device_list()
-      {
-         if (devices_ != nullptr) {
-            ::ibv_free_device_list(devices_);
+         if (!device_list_ptr) {
+            throw std::runtime_error("failed to get Infiniband devices");
          }
+         devices = { device_list_ptr.get(), size_t(n_devices) };
       }
    };
 
@@ -103,7 +85,8 @@ namespace rdmapp
        */
       device(const std::string& device_name, uint16_t port_num = 1)
       {
-         auto devices = device_list();
+         auto list = device_list();
+         auto devices = list.devices;
          for (auto target : devices) {
             if (::ibv_get_device_name(target) == device_name) {
                open_device(target, port_num);
@@ -121,14 +104,15 @@ namespace rdmapp
        */
       device(uint16_t device_num, uint16_t port_num = 1)
       {
-         auto devices = device_list();
+         auto list = device_list();
+         auto devices = list.devices;
          if (device_num >= devices.size()) {
             char buffer[kErrorStringBufferSize]{0};
             ::snprintf(buffer, sizeof(buffer), "requested device number %d out of range, %lu devices available",
                        device_num, devices.size());
             throw std::invalid_argument(buffer);
          }
-         open_device(devices.at(device_num), port_num);
+         open_device(devices[device_num], port_num);
       }
 
       // Get the lid of the device.
