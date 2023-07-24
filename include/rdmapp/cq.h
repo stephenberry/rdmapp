@@ -103,5 +103,4 @@ namespace rdmapp
          return rc;
       }
    };
-
 } // namespace rdmapp

@@ -10,14 +10,14 @@
 
 namespace rdmapp
 {
-   constexpr size_t kErrorStringBufferSize = 1024;
+   constexpr size_t error_string_buffer_size = 1024;
 
    static inline void throw_with(const char* message) { throw std::runtime_error(message); }
 
    template <class... Args>
    static inline void throw_with(const char* format, Args... args)
    {
-      char buffer[kErrorStringBufferSize];
+      char buffer[error_string_buffer_size];
       ::snprintf(buffer, sizeof(buffer), format, args...);
       throw std::runtime_error(buffer);
    }

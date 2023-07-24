@@ -16,21 +16,32 @@ namespace rdmapp
 {
    struct qp;
 
+   struct pd_deleter {
+      void operator()(ibv_pd* pd_) const {
+         if (pd_) [[likely]] {
+            if (auto rc = ::ibv_dealloc_pd(pd_); rc != 0) [[unlikely]] {
+               RDMAPP_LOG_ERROR("failed to dealloc pd %p: %s", reinterpret_cast<void*>(pd_), strerror(errno));
+            }
+            else {
+               RDMAPP_LOG_TRACE("dealloc pd %p", reinterpret_cast<void*>(pd_));
+            }
+         }
+      }
+   };
+
    // This class is an abstraction of a Protection Domain.
    struct pd : public noncopyable, public std::enable_shared_from_this<pd>
    {
-     private:
       std::shared_ptr<device> device_;
-      struct ibv_pd* pd_;
-      friend struct qp;
-      friend struct srq;
+      std::unique_ptr<ibv_pd, pd_deleter> pd_{};
 
-     public:
       pd(std::shared_ptr<rdmapp::device> device) : device_(device)
       {
-         pd_ = ::ibv_alloc_pd(device->ctx_);
-         check_ptr(pd_, "failed to alloc pd");
-         RDMAPP_LOG_TRACE("alloc pd %p", reinterpret_cast<void*>(pd_));
+         pd_.reset(::ibv_alloc_pd(device->ctx_));
+         if (!pd_) {
+            throw std::runtime_error("failed to alloc pd");
+         }
+         RDMAPP_LOG_TRACE("alloc pd %p", reinterpret_cast<void*>(pd_.get()));
       }
 
       /**
@@ -52,26 +63,9 @@ namespace rdmapp
                       int flags = IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_WRITE | IBV_ACCESS_REMOTE_READ |
                                   IBV_ACCESS_REMOTE_ATOMIC)
       {
-         auto mr = ::ibv_reg_mr(pd_, buffer, length, flags);
+         auto mr = ::ibv_reg_mr(pd_.get(), buffer, length, flags);
          check_ptr(mr, "failed to reg mr");
          return local_mr(this->shared_from_this(), mr);
-      }
-
-      /**
-       * @brief Destroy the pd object and the associated protection domain.
-       *
-       */
-      ~pd()
-      {
-         if (pd_ == nullptr) [[unlikely]] {
-            return;
-         }
-         if (auto rc = ::ibv_dealloc_pd(pd_); rc != 0) [[unlikely]] {
-            RDMAPP_LOG_ERROR("failed to dealloc pd %p: %s", reinterpret_cast<void*>(pd_), strerror(errno));
-         }
-         else {
-            RDMAPP_LOG_TRACE("dealloc pd %p", reinterpret_cast<void*>(pd_));
-         }
       }
    };
 

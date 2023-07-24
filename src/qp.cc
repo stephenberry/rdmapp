@@ -86,7 +86,7 @@ namespace rdmapp
          post_recv_fn = &qp::post_recv_rq;
       }
 
-      qp_ = ::ibv_create_qp(pd_->pd_, &qp_init_attr);
+      qp_ = ::ibv_create_qp(pd_->pd_.get(), &qp_init_attr);
       check_ptr(qp_, "failed to create qp");
       sq_psn_ = next_sq_psn.fetch_add(1);
       RDMAPP_LOG_TRACE("created qp %p lid=%u qpn=%u psn=%u", reinterpret_cast<void*>(qp_), pd_->device_ptr()->lid(),

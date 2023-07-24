@@ -43,7 +43,7 @@ namespace rdmapp
          srq_init_attr.attr.max_wr = max_wr;
          srq_init_attr.attr.srq_limit = max_wr;
 
-         srq_.reset(::ibv_create_srq(pd_->pd_, &srq_init_attr));
+         srq_.reset(::ibv_create_srq(pd_->pd_.get(), &srq_init_attr));
          if (!srq_) {
             throw std::runtime_error("failed to create srq");
          }

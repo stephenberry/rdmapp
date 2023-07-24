@@ -107,7 +107,7 @@ namespace rdmapp
          auto list = device_list();
          auto devices = list.devices;
          if (device_num >= devices.size()) {
-            char buffer[kErrorStringBufferSize]{0};
+            char buffer[error_string_buffer_size]{0};
             ::snprintf(buffer, sizeof(buffer), "requested device number %d out of range, %lu devices available",
                        device_num, devices.size());
             throw std::invalid_argument(buffer);
