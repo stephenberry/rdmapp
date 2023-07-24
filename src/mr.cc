@@ -11,10 +11,7 @@
 
 namespace rdmapp {
 
-local_mr::mr(std::shared_ptr<pd> pd, struct ibv_mr *mr) : mr_(mr), pd_(pd) {}
 
-local_mr::mr(local_mr &&other)
-    : mr_(std::exchange(other.mr_, nullptr)), pd_(std::move(other.pd_)) {}
 
 local_mr &local_mr::operator=(local_mr &&other) {
   mr_ = other.mr_;
