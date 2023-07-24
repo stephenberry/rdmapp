@@ -8,7 +8,8 @@
 namespace rdmapp {
 namespace detail {
 
-template <class T> class blocking_queue {
+template <class T> struct blocking_queue {
+private:
   std::mutex mutex_;
   std::condition_variable cv_;
   std::queue<T> queue_;

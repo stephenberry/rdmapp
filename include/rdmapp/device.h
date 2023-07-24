@@ -52,9 +52,9 @@ class device : public noncopyable {
   struct ibv_device_attr_ex device_attr_ex_;
 
   uint16_t port_num_;
-  friend class pd;
+  friend struct pd;
   friend class cq;
-  friend class qp;
+  friend struct qp;
   friend class srq;
   void open_device(struct ibv_device *target, uint16_t port_num);
 

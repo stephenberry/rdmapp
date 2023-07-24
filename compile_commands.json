@@ -1,0 +1,92 @@
+[
+{
+  "directory": "/workspaces/rdmapp/build",
+  "command": "/usr/bin/g++ -DSOURCE_PATH_LENGTH=19 -I/workspaces/rdmapp/include -g -flto -fno-rtti -Wall -Wextra -pedantic -Werror -std=gnu++20 -o CMakeFiles/rdmapp.dir/src/device.cc.o -c /workspaces/rdmapp/src/device.cc",
+  "file": "/workspaces/rdmapp/src/device.cc"
+},
+{
+  "directory": "/workspaces/rdmapp/build",
+  "command": "/usr/bin/g++ -DSOURCE_PATH_LENGTH=19 -I/workspaces/rdmapp/include -g -flto -fno-rtti -Wall -Wextra -pedantic -Werror -std=gnu++20 -o CMakeFiles/rdmapp.dir/src/pd.cc.o -c /workspaces/rdmapp/src/pd.cc",
+  "file": "/workspaces/rdmapp/src/pd.cc"
+},
+{
+  "directory": "/workspaces/rdmapp/build",
+  "command": "/usr/bin/g++ -DSOURCE_PATH_LENGTH=19 -I/workspaces/rdmapp/include -g -flto -fno-rtti -Wall -Wextra -pedantic -Werror -std=gnu++20 -o CMakeFiles/rdmapp.dir/src/cq.cc.o -c /workspaces/rdmapp/src/cq.cc",
+  "file": "/workspaces/rdmapp/src/cq.cc"
+},
+{
+  "directory": "/workspaces/rdmapp/build",
+  "command": "/usr/bin/g++ -DSOURCE_PATH_LENGTH=19 -I/workspaces/rdmapp/include -g -flto -fno-rtti -Wall -Wextra -pedantic -Werror -std=gnu++20 -o CMakeFiles/rdmapp.dir/src/qp.cc.o -c /workspaces/rdmapp/src/qp.cc",
+  "file": "/workspaces/rdmapp/src/qp.cc"
+},
+{
+  "directory": "/workspaces/rdmapp/build",
+  "command": "/usr/bin/g++ -DSOURCE_PATH_LENGTH=19 -I/workspaces/rdmapp/include -g -flto -fno-rtti -Wall -Wextra -pedantic -Werror -std=gnu++20 -o CMakeFiles/rdmapp.dir/src/srq.cc.o -c /workspaces/rdmapp/src/srq.cc",
+  "file": "/workspaces/rdmapp/src/srq.cc"
+},
+{
+  "directory": "/workspaces/rdmapp/build",
+  "command": "/usr/bin/g++ -DSOURCE_PATH_LENGTH=19 -I/workspaces/rdmapp/include -g -flto -fno-rtti -Wall -Wextra -pedantic -Werror -std=gnu++20 -o CMakeFiles/rdmapp.dir/src/cq_poller.cc.o -c /workspaces/rdmapp/src/cq_poller.cc",
+  "file": "/workspaces/rdmapp/src/cq_poller.cc"
+},
+{
+  "directory": "/workspaces/rdmapp/build",
+  "command": "/usr/bin/g++ -DSOURCE_PATH_LENGTH=19 -I/workspaces/rdmapp/include -g -flto -fno-rtti -Wall -Wextra -pedantic -Werror -std=gnu++20 -o CMakeFiles/rdmapp.dir/src/executor.cc.o -c /workspaces/rdmapp/src/executor.cc",
+  "file": "/workspaces/rdmapp/src/executor.cc"
+},
+{
+  "directory": "/workspaces/rdmapp/build",
+  "command": "/usr/bin/g++ -DSOURCE_PATH_LENGTH=19 -I/workspaces/rdmapp/include -g -flto -fno-rtti -Wall -Wextra -pedantic -Werror -std=gnu++20 -o CMakeFiles/rdmapp.dir/src/mr.cc.o -c /workspaces/rdmapp/src/mr.cc",
+  "file": "/workspaces/rdmapp/src/mr.cc"
+},
+{
+  "directory": "/workspaces/rdmapp/build",
+  "command": "/usr/bin/g++ -DSOURCE_PATH_LENGTH=19 -I/workspaces/rdmapp/examples/include -I/workspaces/rdmapp/include -g -flto -fno-rtti -Wall -Wextra -pedantic -Werror -std=gnu++20 -o CMakeFiles/rdmapp_examples.dir/examples/socket/event_loop.cc.o -c /workspaces/rdmapp/examples/socket/event_loop.cc",
+  "file": "/workspaces/rdmapp/examples/socket/event_loop.cc"
+},
+{
+  "directory": "/workspaces/rdmapp/build",
+  "command": "/usr/bin/g++ -DSOURCE_PATH_LENGTH=19 -I/workspaces/rdmapp/examples/include -I/workspaces/rdmapp/include -g -flto -fno-rtti -Wall -Wextra -pedantic -Werror -std=gnu++20 -o CMakeFiles/rdmapp_examples.dir/examples/socket/channel.cc.o -c /workspaces/rdmapp/examples/socket/channel.cc",
+  "file": "/workspaces/rdmapp/examples/socket/channel.cc"
+},
+{
+  "directory": "/workspaces/rdmapp/build",
+  "command": "/usr/bin/g++ -DSOURCE_PATH_LENGTH=19 -I/workspaces/rdmapp/examples/include -I/workspaces/rdmapp/include -g -flto -fno-rtti -Wall -Wextra -pedantic -Werror -std=gnu++20 -o CMakeFiles/rdmapp_examples.dir/examples/socket/tcp_connection.cc.o -c /workspaces/rdmapp/examples/socket/tcp_connection.cc",
+  "file": "/workspaces/rdmapp/examples/socket/tcp_connection.cc"
+},
+{
+  "directory": "/workspaces/rdmapp/build",
+  "command": "/usr/bin/g++ -DSOURCE_PATH_LENGTH=19 -I/workspaces/rdmapp/examples/include -I/workspaces/rdmapp/include -g -flto -fno-rtti -Wall -Wextra -pedantic -Werror -std=gnu++20 -o CMakeFiles/rdmapp_examples.dir/examples/socket/tcp_listener.cc.o -c /workspaces/rdmapp/examples/socket/tcp_listener.cc",
+  "file": "/workspaces/rdmapp/examples/socket/tcp_listener.cc"
+},
+{
+  "directory": "/workspaces/rdmapp/build",
+  "command": "/usr/bin/g++ -DSOURCE_PATH_LENGTH=19 -I/workspaces/rdmapp/examples/include -I/workspaces/rdmapp/include -g -flto -fno-rtti -Wall -Wextra -pedantic -Werror -std=gnu++20 -o CMakeFiles/rdmapp_examples.dir/examples/acceptor.cc.o -c /workspaces/rdmapp/examples/acceptor.cc",
+  "file": "/workspaces/rdmapp/examples/acceptor.cc"
+},
+{
+  "directory": "/workspaces/rdmapp/build",
+  "command": "/usr/bin/g++ -DSOURCE_PATH_LENGTH=19 -I/workspaces/rdmapp/examples/include -I/workspaces/rdmapp/include -g -flto -fno-rtti -Wall -Wextra -pedantic -Werror -std=gnu++20 -o CMakeFiles/rdmapp_examples.dir/examples/connector.cc.o -c /workspaces/rdmapp/examples/connector.cc",
+  "file": "/workspaces/rdmapp/examples/connector.cc"
+},
+{
+  "directory": "/workspaces/rdmapp/build",
+  "command": "/usr/bin/g++ -DSOURCE_PATH_LENGTH=19 -I/workspaces/rdmapp/examples/include -I/workspaces/rdmapp/include -g -flto -fno-rtti -Wall -Wextra -pedantic -Werror -std=gnu++20 -o CMakeFiles/rdmapp_examples.dir/examples/qp_transmission.cc.o -c /workspaces/rdmapp/examples/qp_transmission.cc",
+  "file": "/workspaces/rdmapp/examples/qp_transmission.cc"
+},
+{
+  "directory": "/workspaces/rdmapp/build",
+  "command": "/usr/bin/g++ -DSOURCE_PATH_LENGTH=19 -I/workspaces/rdmapp/examples/include -I/workspaces/rdmapp/include -g -flto -fno-rtti -Wall -Wextra -pedantic -Werror -std=gnu++20 -o CMakeFiles/helloworld.dir/examples/helloworld.cc.o -c /workspaces/rdmapp/examples/helloworld.cc",
+  "file": "/workspaces/rdmapp/examples/helloworld.cc"
+},
+{
+  "directory": "/workspaces/rdmapp/build",
+  "command": "/usr/bin/g++ -DSOURCE_PATH_LENGTH=19 -I/workspaces/rdmapp/examples/include -I/workspaces/rdmapp/include -g -flto -fno-rtti -Wall -Wextra -pedantic -Werror -std=gnu++20 -o CMakeFiles/send_bw.dir/examples/send_bw.cc.o -c /workspaces/rdmapp/examples/send_bw.cc",
+  "file": "/workspaces/rdmapp/examples/send_bw.cc"
+},
+{
+  "directory": "/workspaces/rdmapp/build",
+  "command": "/usr/bin/g++ -DSOURCE_PATH_LENGTH=19 -I/workspaces/rdmapp/examples/include -I/workspaces/rdmapp/include -g -flto -fno-rtti -Wall -Wextra -pedantic -Werror -std=gnu++20 -o CMakeFiles/write_bw.dir/examples/write_bw.cc.o -c /workspaces/rdmapp/examples/write_bw.cc",
+  "file": "/workspaces/rdmapp/examples/write_bw.cc"
+}
+]

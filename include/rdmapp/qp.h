@@ -46,7 +46,8 @@ struct deserialized_qp {
  * @brief This class is an abstraction of an Infiniband Queue Pair.
  *
  */
-class qp : public noncopyable, public std::enable_shared_from_this<qp> {
+struct qp : public noncopyable, public std::enable_shared_from_this<qp> {
+  private:
   static std::atomic<uint32_t> next_sq_psn;
   struct ibv_qp *qp_;
   struct ibv_srq *raw_srq_;

@@ -11,14 +11,12 @@
 
 namespace rdmapp {
 
-template <class T> class value_returner {
-public:
+template <class T> struct value_returner {
   std::promise<T> promise_;
   void return_value(T &&value) { promise_.set_value(std::forward<T>(value)); }
 };
 
-template <> class value_returner<void> {
-public:
+template <> struct value_returner<void> {
   std::promise<void> promise_;
   void return_void() { promise_.set_value(); }
 };

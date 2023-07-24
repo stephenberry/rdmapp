@@ -6,8 +6,7 @@
 #include <netinet/in.h>
 #include <type_traits>
 
-namespace rdmapp {
-namespace detail {
+namespace rdmapp::detail {
 
 static inline uint16_t ntoh(uint16_t const &value) { return ::be16toh(value); }
 
@@ -44,5 +43,4 @@ deserialize(It &it, T &value) {
   value = reinterpret_cast<void *>(ntoh(reinterpret_cast<uint64_t>(value)));
 }
 
-} // namespace detail
 } // namespace rdmapp

@@ -18,7 +18,7 @@ struct remote {};
 } // namespace mr
 } // namespace tags
 
-class pd;
+struct pd;
 
 /**
  * @brief A remote or local memory region.

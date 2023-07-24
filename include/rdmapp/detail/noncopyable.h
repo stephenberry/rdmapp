@@ -2,8 +2,7 @@
 
 namespace rdmapp {
 
-class noncopyable {
-public:
+struct noncopyable {
   noncopyable() = default;
   noncopyable(noncopyable &&) = default;
   noncopyable(noncopyable const &) = delete;

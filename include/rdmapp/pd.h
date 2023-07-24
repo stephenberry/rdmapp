@@ -11,16 +11,17 @@
 
 namespace rdmapp {
 
-class qp;
+struct qp;
 
 /**
  * @brief This class is an abstraction of a Protection Domain.
  *
  */
-class pd : public noncopyable, public std::enable_shared_from_this<pd> {
+struct pd : public noncopyable, public std::enable_shared_from_this<pd> {
+  private:
   std::shared_ptr<device> device_;
   struct ibv_pd *pd_;
-  friend class qp;
+  friend struct qp;
   friend class srq;
 
 public:
