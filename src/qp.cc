@@ -105,7 +105,7 @@ void qp::init() {
   ::bzero(&qp_attr, sizeof(qp_attr));
   qp_attr.qp_state = IBV_QPS_INIT;
   qp_attr.pkey_index = 0;
-  qp_attr.port_num = pd_->device_ptr()->port_num();
+  qp_attr.port_num = pd_->device_ptr()->port_num;
   qp_attr.qp_access_flags = IBV_ACCESS_REMOTE_WRITE | IBV_ACCESS_REMOTE_READ |
                             IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_ATOMIC;
   try {
@@ -132,7 +132,7 @@ void qp::rtr(uint16_t remote_lid, uint32_t remote_qpn, uint32_t remote_psn) {
   qp_attr.ah_attr.dlid = remote_lid;
   qp_attr.ah_attr.sl = 0;
   qp_attr.ah_attr.src_path_bits = 0;
-  qp_attr.ah_attr.port_num = pd_->device_ptr()->port_num();
+  qp_attr.ah_attr.port_num = pd_->device_ptr()->port_num;
 
   try {
     check_rc(::ibv_modify_qp(qp_, &qp_attr,
