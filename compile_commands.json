@@ -11,11 +11,6 @@
 },
 {
   "directory": "/workspaces/rdmapp/build",
-  "command": "/usr/bin/g++ -DSOURCE_PATH_LENGTH=19 -I/workspaces/rdmapp/include -g -flto -fno-rtti -Wall -Wextra -pedantic -Werror -std=gnu++20 -o CMakeFiles/rdmapp.dir/src/cq.cc.o -c /workspaces/rdmapp/src/cq.cc",
-  "file": "/workspaces/rdmapp/src/cq.cc"
-},
-{
-  "directory": "/workspaces/rdmapp/build",
   "command": "/usr/bin/g++ -DSOURCE_PATH_LENGTH=19 -I/workspaces/rdmapp/include -g -flto -fno-rtti -Wall -Wextra -pedantic -Werror -std=gnu++20 -o CMakeFiles/rdmapp.dir/src/qp.cc.o -c /workspaces/rdmapp/src/qp.cc",
   "file": "/workspaces/rdmapp/src/qp.cc"
 },

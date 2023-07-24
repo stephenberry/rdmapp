@@ -45,7 +45,6 @@ endif ()
 set(RDMAPP_SOURCE_FILES
   src/device.cc
   src/pd.cc
-  src/cq.cc
   src/qp.cc
   src/srq.cc
   src/executor.cc

@@ -53,7 +53,19 @@ namespace rdmapp
        * @exception std::runtime_exception Error occured while polling the
        * completion queue.
        */
-      bool poll(struct ibv_wc& wc);
+      bool poll(struct ibv_wc& wc)
+      {
+         if (auto rc = ::ibv_poll_cq(cq_, 1, &wc); rc < 0) [[unlikely]] {
+            check_rc(-rc, "failed to poll cq");
+         }
+         else if (rc == 0) {
+            return false;
+         }
+         else {
+            return true;
+         }
+         return false;
+      }
 
       /**
        * @brief Poll the completion queue.
@@ -65,7 +77,8 @@ namespace rdmapp
        * @exception std::runtime_exception Error occured while polling the
        * completion queue.
        */
-      size_t poll(std::vector<struct ibv_wc>& wc_vec);
+      size_t poll(std::vector<struct ibv_wc>& wc_vec) { return poll(&wc_vec[0], wc_vec.size()); }
+
       template <class It>
       size_t poll(It wc, int count)
       {
@@ -80,7 +93,20 @@ namespace rdmapp
       {
          return poll(&wc_array[0], N);
       }
-      ~cq();
+      
+      ~cq()
+      {
+         if (cq_ == nullptr) [[unlikely]] {
+            return;
+         }
+
+         if (auto rc = ::ibv_destroy_cq(cq_); rc != 0) [[unlikely]] {
+            RDMAPP_LOG_ERROR("failed to destroy cq %p: %s", reinterpret_cast<void*>(cq_), strerror(errno));
+         }
+         else {
+            RDMAPP_LOG_TRACE("destroyed cq: %p", reinterpret_cast<void*>(cq_));
+         }
+      }
    };
 
 } // namespace rdmapp
