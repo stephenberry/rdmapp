@@ -81,7 +81,7 @@ namespace rdmapp
       friend struct pd;
       friend struct cq;
       friend struct qp;
-      friend class srq;
+      friend struct srq;
       void open_device(struct ibv_device* target, uint16_t port_num);
 
      public:

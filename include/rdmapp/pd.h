@@ -14,20 +14,16 @@
 
 namespace rdmapp
 {
-
    struct qp;
 
-   /**
-    * @brief This class is an abstraction of a Protection Domain.
-    *
-    */
+   // This class is an abstraction of a Protection Domain.
    struct pd : public noncopyable, public std::enable_shared_from_this<pd>
    {
      private:
       std::shared_ptr<device> device_;
       struct ibv_pd* pd_;
       friend struct qp;
-      friend class srq;
+      friend struct srq;
 
      public:
       pd(std::shared_ptr<rdmapp::device> device) : device_(device)
@@ -58,7 +54,7 @@ namespace rdmapp
       {
          auto mr = ::ibv_reg_mr(pd_, buffer, length, flags);
          check_ptr(mr, "failed to reg mr");
-         return rdmapp::local_mr(this->shared_from_this(), mr);
+         return local_mr(this->shared_from_this(), mr);
       }
 
       /**
