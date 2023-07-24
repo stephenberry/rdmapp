@@ -3,9 +3,14 @@
 #include <infiniband/verbs.h>
 
 #include <array>
+#include <cassert>
+#include <cstdio>
+#include <cstring>
 #include <memory>
+#include <stdexcept>
 #include <vector>
 
+#include "rdmapp/detail/debug.h"
 #include "rdmapp/detail/noncopyable.h"
 #include "rdmapp/device.h"
 #include "rdmapp/error.h"
@@ -20,7 +25,7 @@ namespace rdmapp
     */
    struct cq : public noncopyable
    {
-    private:
+     private:
       std::shared_ptr<device> device_;
       struct ibv_cq* cq_;
       friend struct qp;
@@ -32,7 +37,12 @@ namespace rdmapp
        * @param device The device to use.
        * @param num_cqe The number of completion entries to allocate.
        */
-      cq(std::shared_ptr<device> device, size_t num_cqe = 128);
+      cq(std::shared_ptr<device> device, size_t num_cqe = 128) : device_(device)
+      {
+         cq_ = ::ibv_create_cq(device->ctx_, num_cqe, this, nullptr, 0);
+         check_ptr(cq_, "failed to create cq");
+         RDMAPP_LOG_TRACE("created cq: %p", reinterpret_cast<void*>(cq_));
+      }
 
       /**
        * @brief Poll the completion queue.

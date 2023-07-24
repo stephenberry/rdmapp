@@ -14,12 +14,6 @@
 
 namespace rdmapp {
 
-cq::cq(std::shared_ptr<device> device, size_t nr_cqe) : device_(device) {
-  cq_ = ::ibv_create_cq(device->ctx_, nr_cqe, this, nullptr, 0);
-  check_ptr(cq_, "failed to create cq");
-  RDMAPP_LOG_TRACE("created cq: %p", reinterpret_cast<void *>(cq_));
-}
-
 bool cq::poll(struct ibv_wc &wc) {
   if (auto rc = ::ibv_poll_cq(cq_, 1, &wc); rc < 0) [[unlikely]] {
     check_rc(-rc, "failed to poll cq");
