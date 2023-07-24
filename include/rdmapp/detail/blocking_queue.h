@@ -10,13 +10,6 @@ namespace rdmapp::detail
    template <class T>
    struct blocking_queue
    {
-     private:
-      std::mutex mutex{};
-      std::condition_variable cv{};
-      std::queue<T> queue{};
-      bool closed{};
-
-     public:
       struct queue_closed_error
       {};
 
@@ -46,5 +39,11 @@ namespace rdmapp::detail
          closed = true;
          cv.notify_all();
       }
+
+      private:
+      std::mutex mutex{};
+      std::condition_variable cv{};
+      std::queue<T> queue{};
+      bool closed{};
    };
 } // namespace rdmapp
