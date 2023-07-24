@@ -2,7 +2,6 @@
 
 #include <arpa/inet.h>
 #include <endian.h>
-#include <infiniband/verbs.h>
 #include <netdb.h>
 #include <netinet/in.h>
 #include <strings.h>
@@ -12,11 +11,9 @@
 #include <cassert>
 #include <cerrno>
 #include <cstdio>
-#include <cstring>
 #include <exception>
 #include <iterator>
 #include <optional>
-#include <stdexcept>
 #include <utility>
 
 #include "rdmapp/cq_poller.h"
