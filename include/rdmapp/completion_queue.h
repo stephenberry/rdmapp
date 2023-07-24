@@ -16,7 +16,7 @@
 
 namespace rdmapp
 {
-   struct qp;
+   struct queue_pair;
 
    struct cq_deleter
    {

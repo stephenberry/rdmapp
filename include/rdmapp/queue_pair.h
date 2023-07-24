@@ -42,15 +42,15 @@ namespace rdmapp
       std::vector<uint8_t> user_data;
    };
 
-   // This class is an abstraction of an Infiniband Queue Pair.
-   struct qp : public noncopyable, public std::enable_shared_from_this<qp>
+   // Infiniband Queue Pair.
+   struct queue_pair : public noncopyable, public std::enable_shared_from_this<queue_pair>
    {
      private:
       static std::atomic<uint32_t> next_sq_psn;
       ibv_qp* qp_{};
       ibv_srq* raw_srq_{};
       uint32_t sq_psn_{};
-      void (qp::*post_recv_fn)(const ibv_recv_wr& recv_wr, ibv_recv_wr*& bad_recv_wr) const;
+      void (queue_pair::*post_recv_fn)(const ibv_recv_wr& recv_wr, ibv_recv_wr*& bad_recv_wr) const;
 
       std::shared_ptr<protected_domain> pd_;
       std::shared_ptr<completion_queue> recv_cq_;
@@ -69,7 +69,7 @@ namespace rdmapp
      public:
       class send_awaitable
       {
-         std::shared_ptr<qp> qp_;
+         std::shared_ptr<queue_pair> qp_;
          std::shared_ptr<local_mr> local_mr_;
          std::exception_ptr exception_;
          remote_mr remote_mr_;
@@ -80,23 +80,23 @@ namespace rdmapp
          const enum ibv_wr_opcode opcode_;
 
         public:
-         send_awaitable(std::shared_ptr<qp> qp, void* buffer, size_t length, enum ibv_wr_opcode opcode);
-         send_awaitable(std::shared_ptr<qp> qp, void* buffer, size_t length, enum ibv_wr_opcode opcode,
+         send_awaitable(std::shared_ptr<queue_pair> qp, void* buffer, size_t length, enum ibv_wr_opcode opcode);
+         send_awaitable(std::shared_ptr<queue_pair> qp, void* buffer, size_t length, enum ibv_wr_opcode opcode,
                         const remote_mr& remote_mr);
-         send_awaitable(std::shared_ptr<qp> qp, void* buffer, size_t length, enum ibv_wr_opcode opcode,
+         send_awaitable(std::shared_ptr<queue_pair> qp, void* buffer, size_t length, enum ibv_wr_opcode opcode,
                         const remote_mr& remote_mr, uint32_t imm);
-         send_awaitable(std::shared_ptr<qp> qp, void* buffer, size_t length, enum ibv_wr_opcode opcode,
+         send_awaitable(std::shared_ptr<queue_pair> qp, void* buffer, size_t length, enum ibv_wr_opcode opcode,
                         const remote_mr& remote_mr, uint64_t add);
-         send_awaitable(std::shared_ptr<qp> qp, void* buffer, size_t length, enum ibv_wr_opcode opcode,
+         send_awaitable(std::shared_ptr<queue_pair> qp, void* buffer, size_t length, enum ibv_wr_opcode opcode,
                         const remote_mr& remote_mr, uint64_t compare, uint64_t swap);
-         send_awaitable(std::shared_ptr<qp> qp, std::shared_ptr<local_mr> local_mr, enum ibv_wr_opcode opcode);
-         send_awaitable(std::shared_ptr<qp> qp, std::shared_ptr<local_mr> local_mr, enum ibv_wr_opcode opcode,
+         send_awaitable(std::shared_ptr<queue_pair> qp, std::shared_ptr<local_mr> local_mr, enum ibv_wr_opcode opcode);
+         send_awaitable(std::shared_ptr<queue_pair> qp, std::shared_ptr<local_mr> local_mr, enum ibv_wr_opcode opcode,
                         const remote_mr& remote_mr);
-         send_awaitable(std::shared_ptr<qp> qp, std::shared_ptr<local_mr> local_mr, enum ibv_wr_opcode opcode,
+         send_awaitable(std::shared_ptr<queue_pair> qp, std::shared_ptr<local_mr> local_mr, enum ibv_wr_opcode opcode,
                         const remote_mr& remote_mr, uint32_t imm);
-         send_awaitable(std::shared_ptr<qp> qp, std::shared_ptr<local_mr> local_mr, enum ibv_wr_opcode opcode,
+         send_awaitable(std::shared_ptr<queue_pair> qp, std::shared_ptr<local_mr> local_mr, enum ibv_wr_opcode opcode,
                         const remote_mr& remote_mr, uint64_t add);
-         send_awaitable(std::shared_ptr<qp> qp, std::shared_ptr<local_mr> local_mr, enum ibv_wr_opcode opcode,
+         send_awaitable(std::shared_ptr<queue_pair> qp, std::shared_ptr<local_mr> local_mr, enum ibv_wr_opcode opcode,
                         const remote_mr& remote_mr, uint64_t compare, uint64_t swap);
          bool await_ready() const noexcept;
          bool await_suspend(std::coroutine_handle<> h) noexcept;
@@ -108,15 +108,15 @@ namespace rdmapp
       struct recv_awaitable
       {
         private:
-         std::shared_ptr<qp> qp_;
+         std::shared_ptr<queue_pair> qp_;
          std::shared_ptr<local_mr> local_mr_;
          std::exception_ptr exception_;
          struct ibv_wc wc_;
          enum ibv_wr_opcode opcode_;
 
         public:
-         recv_awaitable(std::shared_ptr<qp> qp, std::shared_ptr<local_mr> local_mr);
-         recv_awaitable(std::shared_ptr<qp> qp, void* buffer, size_t length);
+         recv_awaitable(std::shared_ptr<queue_pair> qp, std::shared_ptr<local_mr> local_mr);
+         recv_awaitable(std::shared_ptr<queue_pair> qp, void* buffer, size_t length);
          bool await_ready() const noexcept;
          bool await_suspend(std::coroutine_handle<> h) noexcept;
          std::pair<uint32_t, std::optional<uint32_t>> await_resume() const;
@@ -135,7 +135,7 @@ namespace rdmapp
        * @param srq (Optional) If set, all recv work requests will be posted to this
        * SRQ.
        */
-      qp(const uint16_t remote_lid, const uint32_t remote_qpn, const uint32_t remote_psn, std::shared_ptr<protected_domain> pd,
+      queue_pair(const uint16_t remote_lid, const uint32_t remote_qpn, const uint32_t remote_psn, std::shared_ptr<protected_domain> pd,
          std::shared_ptr<completion_queue> cq, std::shared_ptr<srq> srq = nullptr);
 
       /**
@@ -152,7 +152,7 @@ namespace rdmapp
        * @param srq (Optional) If set, all recv work requests will be posted to this
        * SRQ.
        */
-      qp(const uint16_t remote_lid, const uint32_t remote_qpn, const uint32_t remote_psn, std::shared_ptr<protected_domain> pd,
+      queue_pair(const uint16_t remote_lid, const uint32_t remote_qpn, const uint32_t remote_psn, std::shared_ptr<protected_domain> pd,
          std::shared_ptr<completion_queue> recv_cq, std::shared_ptr<completion_queue> send_cq, std::shared_ptr<srq> srq = nullptr);
 
       /**
@@ -164,7 +164,7 @@ namespace rdmapp
        * @param srq (Optional) If set, all recv work requests will be posted to this
        * SRQ.
        */
-      qp(std::shared_ptr<protected_domain> pd, std::shared_ptr<completion_queue> cq, std::shared_ptr<srq> srq = nullptr);
+      queue_pair(std::shared_ptr<protected_domain> pd, std::shared_ptr<completion_queue> cq, std::shared_ptr<srq> srq = nullptr);
 
       /**
        * @brief Construct a new qp object. The constructed Queue Pair will be in
@@ -176,7 +176,7 @@ namespace rdmapp
        * @param srq (Optional) If set, all recv work requests will be posted to this
        * SRQ.
        */
-      qp(std::shared_ptr<protected_domain> pd, std::shared_ptr<completion_queue> recv_cq, std::shared_ptr<completion_queue> send_cq,
+      queue_pair(std::shared_ptr<protected_domain> pd, std::shared_ptr<completion_queue> recv_cq, std::shared_ptr<completion_queue> send_cq,
          std::shared_ptr<srq> srq = nullptr);
 
       /**
@@ -391,7 +391,7 @@ namespace rdmapp
        * @return std::shared_ptr<pd> Pointer to the PD.
        */
       std::shared_ptr<protected_domain> pd_ptr() const;
-      ~qp();
+      ~queue_pair();
 
       /**
        * @brief This function transitions the Queue Pair to the RTR state.

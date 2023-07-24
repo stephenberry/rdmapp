@@ -20,11 +20,11 @@ namespace rdmapp
     * @return task<std::shared_ptr<qp>> A coroutine that returns a shared pointer
     * to the new Queue Pair.
     */
-   static task<std::shared_ptr<qp>> from_tcp_connection(socket::tcp_connection& connection, std::shared_ptr<protected_domain> pd,
+   static task<std::shared_ptr<queue_pair>> from_tcp_connection(socket::tcp_connection& connection, std::shared_ptr<protected_domain> pd,
                                                         std::shared_ptr<completion_queue> recv_cq, std::shared_ptr<completion_queue> send_cq,
                                                         std::shared_ptr<srq> srq = nullptr)
    {
-      auto qp_ptr = std::make_shared<qp>(pd, recv_cq, send_cq, srq);
+      auto qp_ptr = std::make_shared<queue_pair>(pd, recv_cq, send_cq, srq);
       co_await send_qp(*qp_ptr, connection);
       auto remote_qp = co_await recv_qp(connection);
       qp_ptr->rtr(remote_qp.header.lid, remote_qp.header.qp_num, remote_qp.header.sq_psn);
@@ -44,7 +44,7 @@ namespace rdmapp
       : connector(loop, hostname, port, pd, cq, cq, srq)
    {}
 
-   task<std::shared_ptr<qp>> connector::connect()
+   task<std::shared_ptr<queue_pair>> connector::connect()
    {
       auto connection = co_await rdmapp::socket::tcp_connection::connect(loop_, hostname_, port_);
       auto qp = co_await from_tcp_connection(*connection, pd_, recv_cq_, send_cq_, srq_);

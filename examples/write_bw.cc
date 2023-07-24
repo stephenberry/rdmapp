@@ -20,7 +20,7 @@ std::atomic<size_t> gSendCount = 0;
 constexpr size_t kBufferSizeBytes = 8;
 constexpr size_t kSendCount = 1024 * 1024 * 1024;
 
-rdmapp::task<void> client_worker(std::shared_ptr<rdmapp::qp> qp)
+rdmapp::task<void> client_worker(std::shared_ptr<rdmapp::queue_pair> qp)
 {
    std::vector<uint8_t> buffer;
    buffer.resize(kBufferSizeBytes);

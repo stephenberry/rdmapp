@@ -14,7 +14,7 @@
 
 namespace rdmapp
 {
-   struct qp;
+   struct queue_pair;
 
    struct pd_deleter {
       void operator()(ibv_pd* pd_) const {

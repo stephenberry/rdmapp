@@ -10,7 +10,7 @@
 #include <rdmapp/detail/noncopyable.h>
 #include <rdmapp/device.h>
 #include <rdmapp/protected_domain.h>
-#include <rdmapp/qp.h>
+#include <rdmapp/queue_pair.h>
 
 namespace rdmapp {
 
@@ -94,7 +94,7 @@ public:
    * @return task<std::shared_ptr<qp>> A completion task that returns a shared
    * pointer to the new queue pair. It will be in the RTS state.
    */
-  task<std::shared_ptr<qp>> accept();
+  task<std::shared_ptr<queue_pair>> accept();
   ~acceptor();
 };
 

@@ -5,6 +5,6 @@
 #include "rdmapp/device.h"
 #include "rdmapp/error.h"
 #include "rdmapp/protected_domain.h"
-#include "rdmapp/qp.h"
+#include "rdmapp/queue_pair.h"
 #include "rdmapp/srq.h"
 #include "rdmapp/task.h"

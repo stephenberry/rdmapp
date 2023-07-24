@@ -2,7 +2,7 @@
 
 namespace rdmapp
 {
-   task<void> send_qp(const qp& qp, socket::tcp_connection& connection)
+   task<void> send_qp(const queue_pair& qp, socket::tcp_connection& connection)
    {
       auto local_qp_data = qp.serialize();
       assert(local_qp_data.size() != 0);

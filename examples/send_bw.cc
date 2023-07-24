@@ -22,7 +22,7 @@ constexpr size_t kPrintInterval = 1024;
 constexpr size_t kTotalSizeBytes = kBufferSizeBytes * kSendCount * kWorkerCount;
 
 template <bool Client = false>
-rdmapp::task<void> worker(size_t id, std::shared_ptr<rdmapp::qp> qp)
+rdmapp::task<void> worker(size_t id, std::shared_ptr<rdmapp::queue_pair> qp)
 {
    std::vector<uint8_t> buffer;
    buffer.resize(kBufferSizeBytes);
@@ -44,7 +44,7 @@ rdmapp::task<void> worker(size_t id, std::shared_ptr<rdmapp::qp> qp)
 }
 
 template <bool Client = false>
-rdmapp::task<void> handler(std::shared_ptr<rdmapp::qp> qp)
+rdmapp::task<void> handler(std::shared_ptr<rdmapp::queue_pair> qp)
 {
    std::vector<std::future<void>*> futures;
    for (size_t i = 0; i < kWorkerCount; ++i) {

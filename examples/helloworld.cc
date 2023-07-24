@@ -15,7 +15,7 @@
 
 using namespace std::literals::chrono_literals;
 
-rdmapp::task<void> handle_qp(std::shared_ptr<rdmapp::qp> qp)
+rdmapp::task<void> handle_qp(std::shared_ptr<rdmapp::queue_pair> qp)
 {
    /* Send/Recv */
    char buffer[6] = "hello";

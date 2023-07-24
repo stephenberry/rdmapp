@@ -1,4 +1,4 @@
-#include "rdmapp/qp.h"
+#include "rdmapp/queue_pair.h"
 
 #include <arpa/inet.h>
 #include <endian.h>
@@ -24,22 +24,22 @@
 namespace rdmapp
 {
 
-   std::atomic<uint32_t> qp::next_sq_psn = 1;
-   qp::qp(uint16_t remote_lid, uint32_t remote_qpn, uint32_t remote_psn, std::shared_ptr<protected_domain> pd, std::shared_ptr<completion_queue> cq,
+   std::atomic<uint32_t> queue_pair::next_sq_psn = 1;
+   queue_pair::queue_pair(uint16_t remote_lid, uint32_t remote_qpn, uint32_t remote_psn, std::shared_ptr<protected_domain> pd, std::shared_ptr<completion_queue> cq,
           std::shared_ptr<srq> srq)
-      : qp(remote_lid, remote_qpn, remote_psn, pd, cq, cq, srq)
+      : queue_pair(remote_lid, remote_qpn, remote_psn, pd, cq, cq, srq)
    {}
-   qp::qp(uint16_t remote_lid, uint32_t remote_qpn, uint32_t remote_psn, std::shared_ptr<protected_domain> pd,
+   queue_pair::queue_pair(uint16_t remote_lid, uint32_t remote_qpn, uint32_t remote_psn, std::shared_ptr<protected_domain> pd,
           std::shared_ptr<completion_queue> recv_cq, std::shared_ptr<completion_queue> send_cq, std::shared_ptr<srq> srq)
-      : qp(pd, recv_cq, send_cq, srq)
+      : queue_pair(pd, recv_cq, send_cq, srq)
    {
       rtr(remote_lid, remote_qpn, remote_psn);
       rts();
    }
 
-   qp::qp(std::shared_ptr<rdmapp::protected_domain> pd, std::shared_ptr<completion_queue> cq, std::shared_ptr<srq> srq) : qp(pd, cq, cq, srq) {}
+   queue_pair::queue_pair(std::shared_ptr<rdmapp::protected_domain> pd, std::shared_ptr<completion_queue> cq, std::shared_ptr<srq> srq) : queue_pair(pd, cq, cq, srq) {}
 
-   qp::qp(std::shared_ptr<rdmapp::protected_domain> pd, std::shared_ptr<completion_queue> recv_cq, std::shared_ptr<completion_queue> send_cq,
+   queue_pair::queue_pair(std::shared_ptr<rdmapp::protected_domain> pd, std::shared_ptr<completion_queue> recv_cq, std::shared_ptr<completion_queue> send_cq,
           std::shared_ptr<srq> srq)
       : qp_(nullptr), pd_(pd), recv_cq_(recv_cq), send_cq_(send_cq), srq_(srq)
    {
@@ -47,11 +47,11 @@ namespace rdmapp
       init();
    }
 
-   std::vector<uint8_t>& qp::user_data() { return user_data_; }
+   std::vector<uint8_t>& queue_pair::user_data() { return user_data_; }
 
-   std::shared_ptr<protected_domain> qp::pd_ptr() const { return pd_; }
+   std::shared_ptr<protected_domain> queue_pair::pd_ptr() const { return pd_; }
 
-   std::vector<uint8_t> qp::serialize() const
+   std::vector<uint8_t> queue_pair::serialize() const
    {
       std::vector<uint8_t> buffer;
       auto it = std::back_inserter(buffer);
@@ -63,7 +63,7 @@ namespace rdmapp
       return buffer;
    }
 
-   void qp::create()
+   void queue_pair::create()
    {
       struct ibv_qp_init_attr qp_init_attr = {};
       ::bzero(&qp_init_attr, sizeof(qp_init_attr));
@@ -80,10 +80,10 @@ namespace rdmapp
       if (srq_ != nullptr) {
          qp_init_attr.srq = srq_->srq_.get();
          raw_srq_ = srq_->srq_.get();
-         post_recv_fn = &qp::post_recv_srq;
+         post_recv_fn = &queue_pair::post_recv_srq;
       }
       else {
-         post_recv_fn = &qp::post_recv_rq;
+         post_recv_fn = &queue_pair::post_recv_rq;
       }
 
       qp_ = ::ibv_create_qp(pd_->pd_.get(), &qp_init_attr);
@@ -93,7 +93,7 @@ namespace rdmapp
                        qp_->qp_num, sq_psn_);
    }
 
-   void qp::init()
+   void queue_pair::init()
    {
       struct ibv_qp_attr qp_attr = {};
       ::bzero(&qp_attr, sizeof(qp_attr));
@@ -113,7 +113,7 @@ namespace rdmapp
       }
    }
 
-   void qp::rtr(uint16_t remote_lid, uint32_t remote_qpn, uint32_t remote_psn)
+   void queue_pair::rtr(uint16_t remote_lid, uint32_t remote_qpn, uint32_t remote_psn)
    {
       struct ibv_qp_attr qp_attr = {};
       ::bzero(&qp_attr, sizeof(qp_attr));
@@ -141,7 +141,7 @@ namespace rdmapp
       }
    }
 
-   void qp::rts()
+   void queue_pair::rts()
    {
       struct ibv_qp_attr qp_attr = {};
       ::bzero(&qp_attr, sizeof(qp_attr));
@@ -164,46 +164,46 @@ namespace rdmapp
       }
    }
 
-   void qp::post_send(const ibv_send_wr& send_wr, ibv_send_wr*& bad_send_wr)
+   void queue_pair::post_send(const ibv_send_wr& send_wr, ibv_send_wr*& bad_send_wr)
    {
       RDMAPP_LOG_TRACE("post send wr_id=%p addr=%p", reinterpret_cast<void*>(send_wr.wr_id),
                        reinterpret_cast<void*>(send_wr.sg_list->addr));
       check_rc(::ibv_post_send(qp_, const_cast<struct ibv_send_wr*>(&send_wr), &bad_send_wr), "failed to post send");
    }
 
-   void qp::post_recv(const ibv_recv_wr& recv_wr, ibv_recv_wr*& bad_recv_wr) const
+   void queue_pair::post_recv(const ibv_recv_wr& recv_wr, ibv_recv_wr*& bad_recv_wr) const
    {
       (this->*(post_recv_fn))(recv_wr, bad_recv_wr);
    }
 
-   void qp::post_recv_rq(const ibv_recv_wr& recv_wr, ibv_recv_wr*& bad_recv_wr) const
+   void queue_pair::post_recv_rq(const ibv_recv_wr& recv_wr, ibv_recv_wr*& bad_recv_wr) const
    {
       RDMAPP_LOG_TRACE("post recv wr_id=%p addr=%p", reinterpret_cast<void*>(recv_wr.wr_id),
                        reinterpret_cast<void*>(recv_wr.sg_list->addr));
       check_rc(::ibv_post_recv(qp_, const_cast<struct ibv_recv_wr*>(&recv_wr), &bad_recv_wr), "failed to post recv");
    }
 
-   void qp::post_recv_srq(const ibv_recv_wr& recv_wr, ibv_recv_wr*& bad_recv_wr) const
+   void queue_pair::post_recv_srq(const ibv_recv_wr& recv_wr, ibv_recv_wr*& bad_recv_wr) const
    {
       check_rc(::ibv_post_srq_recv(raw_srq_, const_cast<ibv_recv_wr*>(&recv_wr), &bad_recv_wr),
                "failed to post srq recv");
    }
 
-   qp::send_awaitable::send_awaitable(std::shared_ptr<qp> qp, void* buffer, size_t length, enum ibv_wr_opcode opcode)
+   queue_pair::send_awaitable::send_awaitable(std::shared_ptr<queue_pair> qp, void* buffer, size_t length, enum ibv_wr_opcode opcode)
       : qp_(qp),
         local_mr_(std::make_shared<local_mr>(qp_->pd_->reg_mr(buffer, length))),
         remote_mr_(),
         wc_(),
         opcode_(opcode)
    {}
-   qp::send_awaitable::send_awaitable(std::shared_ptr<qp> qp, void* buffer, size_t length, enum ibv_wr_opcode opcode,
+   queue_pair::send_awaitable::send_awaitable(std::shared_ptr<queue_pair> qp, void* buffer, size_t length, enum ibv_wr_opcode opcode,
                                       const remote_mr& remote_mr)
       : qp_(qp),
         local_mr_(std::make_shared<local_mr>(qp_->pd_->reg_mr(buffer, length))),
         remote_mr_(remote_mr),
         opcode_(opcode)
    {}
-   qp::send_awaitable::send_awaitable(std::shared_ptr<qp> qp, void* buffer, size_t length, enum ibv_wr_opcode opcode,
+   queue_pair::send_awaitable::send_awaitable(std::shared_ptr<queue_pair> qp, void* buffer, size_t length, enum ibv_wr_opcode opcode,
                                       const remote_mr& remote_mr, uint32_t imm)
       : qp_(qp),
         local_mr_(std::make_shared<local_mr>(qp_->pd_->reg_mr(buffer, length))),
@@ -211,7 +211,7 @@ namespace rdmapp
         imm_(imm),
         opcode_(opcode)
    {}
-   qp::send_awaitable::send_awaitable(std::shared_ptr<qp> qp, void* buffer, size_t length, enum ibv_wr_opcode opcode,
+   queue_pair::send_awaitable::send_awaitable(std::shared_ptr<queue_pair> qp, void* buffer, size_t length, enum ibv_wr_opcode opcode,
                                       const remote_mr& remote_mr, uint64_t add)
       : qp_(qp),
         local_mr_(std::make_shared<local_mr>(qp_->pd_->reg_mr(buffer, length))),
@@ -219,7 +219,7 @@ namespace rdmapp
         compare_add_(add),
         opcode_(opcode)
    {}
-   qp::send_awaitable::send_awaitable(std::shared_ptr<qp> qp, void* buffer, size_t length, enum ibv_wr_opcode opcode,
+   queue_pair::send_awaitable::send_awaitable(std::shared_ptr<queue_pair> qp, void* buffer, size_t length, enum ibv_wr_opcode opcode,
                                       const remote_mr& remote_mr, uint64_t compare, uint64_t swap)
       : qp_(qp),
         local_mr_(std::make_shared<local_mr>(qp_->pd_->reg_mr(buffer, length))),
@@ -228,23 +228,23 @@ namespace rdmapp
         swap_(swap),
         opcode_(opcode)
    {}
-   qp::send_awaitable::send_awaitable(std::shared_ptr<qp> qp, std::shared_ptr<local_mr> local_mr,
+   queue_pair::send_awaitable::send_awaitable(std::shared_ptr<queue_pair> qp, std::shared_ptr<local_mr> local_mr,
                                       enum ibv_wr_opcode opcode)
       : qp_(qp), local_mr_(local_mr), remote_mr_(), wc_(), opcode_(opcode)
    {}
-   qp::send_awaitable::send_awaitable(std::shared_ptr<qp> qp, std::shared_ptr<local_mr> local_mr,
+   queue_pair::send_awaitable::send_awaitable(std::shared_ptr<queue_pair> qp, std::shared_ptr<local_mr> local_mr,
                                       enum ibv_wr_opcode opcode, const remote_mr& remote_mr)
       : qp_(qp), local_mr_(local_mr), remote_mr_(remote_mr), opcode_(opcode)
    {}
-   qp::send_awaitable::send_awaitable(std::shared_ptr<qp> qp, std::shared_ptr<local_mr> local_mr,
+   queue_pair::send_awaitable::send_awaitable(std::shared_ptr<queue_pair> qp, std::shared_ptr<local_mr> local_mr,
                                       enum ibv_wr_opcode opcode, const remote_mr& remote_mr, uint32_t imm)
       : qp_(qp), local_mr_(local_mr), remote_mr_(remote_mr), imm_(imm), opcode_(opcode)
    {}
-   qp::send_awaitable::send_awaitable(std::shared_ptr<qp> qp, std::shared_ptr<local_mr> local_mr,
+   queue_pair::send_awaitable::send_awaitable(std::shared_ptr<queue_pair> qp, std::shared_ptr<local_mr> local_mr,
                                       enum ibv_wr_opcode opcode, const remote_mr& remote_mr, uint64_t add)
       : qp_(qp), local_mr_(local_mr), remote_mr_(remote_mr), compare_add_(add), opcode_(opcode)
    {}
-   qp::send_awaitable::send_awaitable(std::shared_ptr<qp> qp, std::shared_ptr<local_mr> local_mr,
+   queue_pair::send_awaitable::send_awaitable(std::shared_ptr<queue_pair> qp, std::shared_ptr<local_mr> local_mr,
                                       enum ibv_wr_opcode opcode, const remote_mr& remote_mr,
 
                                       uint64_t compare, uint64_t swap)
@@ -260,8 +260,8 @@ namespace rdmapp
       return sge;
    }
 
-   bool qp::send_awaitable::await_ready() const noexcept { return false; }
-   bool qp::send_awaitable::await_suspend(std::coroutine_handle<> h) noexcept
+   bool queue_pair::send_awaitable::await_ready() const noexcept { return false; }
+   bool queue_pair::send_awaitable::await_suspend(std::coroutine_handle<> h) noexcept
    {
       auto callback = executor::make_callback([h, this](const ibv_wc& wc) {
          wc_ = wc;
@@ -307,17 +307,17 @@ namespace rdmapp
       return true;
    }
 
-   constexpr bool qp::send_awaitable::is_rdma() const
+   constexpr bool queue_pair::send_awaitable::is_rdma() const
    {
       return opcode_ == IBV_WR_RDMA_READ || opcode_ == IBV_WR_RDMA_WRITE || opcode_ == IBV_WR_RDMA_WRITE_WITH_IMM;
    }
 
-   constexpr bool qp::send_awaitable::is_atomic() const
+   constexpr bool queue_pair::send_awaitable::is_atomic() const
    {
       return opcode_ == IBV_WR_ATOMIC_CMP_AND_SWP || opcode_ == IBV_WR_ATOMIC_FETCH_AND_ADD;
    }
 
-   uint32_t qp::send_awaitable::await_resume() const
+   uint32_t queue_pair::send_awaitable::await_resume() const
    {
       if (exception_) [[unlikely]] {
          std::rethrow_exception(exception_);
@@ -326,83 +326,83 @@ namespace rdmapp
       return wc_.byte_len;
    }
 
-   qp::send_awaitable qp::send(void* buffer, size_t length)
+   queue_pair::send_awaitable queue_pair::send(void* buffer, size_t length)
    {
-      return qp::send_awaitable(this->shared_from_this(), buffer, length, IBV_WR_SEND);
+      return queue_pair::send_awaitable(this->shared_from_this(), buffer, length, IBV_WR_SEND);
    }
 
-   qp::send_awaitable qp::write(const remote_mr& remote_mr, void* buffer, size_t length)
+   queue_pair::send_awaitable queue_pair::write(const remote_mr& remote_mr, void* buffer, size_t length)
    {
-      return qp::send_awaitable(this->shared_from_this(), buffer, length, IBV_WR_RDMA_WRITE, remote_mr);
+      return queue_pair::send_awaitable(this->shared_from_this(), buffer, length, IBV_WR_RDMA_WRITE, remote_mr);
    }
 
-   qp::send_awaitable qp::write_with_imm(const remote_mr& remote_mr, void* buffer, size_t length, uint32_t imm)
+   queue_pair::send_awaitable queue_pair::write_with_imm(const remote_mr& remote_mr, void* buffer, size_t length, uint32_t imm)
    {
-      return qp::send_awaitable(this->shared_from_this(), buffer, length, IBV_WR_RDMA_WRITE_WITH_IMM, remote_mr, imm);
+      return queue_pair::send_awaitable(this->shared_from_this(), buffer, length, IBV_WR_RDMA_WRITE_WITH_IMM, remote_mr, imm);
    }
 
-   qp::send_awaitable qp::read(const remote_mr& remote_mr, void* buffer, size_t length)
+   queue_pair::send_awaitable queue_pair::read(const remote_mr& remote_mr, void* buffer, size_t length)
    {
-      return qp::send_awaitable(this->shared_from_this(), buffer, length, IBV_WR_RDMA_READ, remote_mr);
+      return queue_pair::send_awaitable(this->shared_from_this(), buffer, length, IBV_WR_RDMA_READ, remote_mr);
    }
 
-   qp::send_awaitable qp::fetch_and_add(const remote_mr& remote_mr, void* buffer, size_t length, uint64_t add)
+   queue_pair::send_awaitable queue_pair::fetch_and_add(const remote_mr& remote_mr, void* buffer, size_t length, uint64_t add)
    {
       assert(pd_->device->is_fetch_and_add_supported());
-      return qp::send_awaitable(this->shared_from_this(), buffer, length, IBV_WR_ATOMIC_FETCH_AND_ADD, remote_mr, add);
+      return queue_pair::send_awaitable(this->shared_from_this(), buffer, length, IBV_WR_ATOMIC_FETCH_AND_ADD, remote_mr, add);
    }
 
-   qp::send_awaitable qp::compare_and_swap(const remote_mr& remote_mr, void* buffer, size_t length, uint64_t compare,
+   queue_pair::send_awaitable queue_pair::compare_and_swap(const remote_mr& remote_mr, void* buffer, size_t length, uint64_t compare,
                                            uint64_t swap)
    {
       assert(pd_->device->is_compare_and_swap_supported());
-      return qp::send_awaitable(this->shared_from_this(), buffer, length, IBV_WR_ATOMIC_CMP_AND_SWP, remote_mr, compare,
+      return queue_pair::send_awaitable(this->shared_from_this(), buffer, length, IBV_WR_ATOMIC_CMP_AND_SWP, remote_mr, compare,
                                 swap);
    }
 
-   qp::send_awaitable qp::send(std::shared_ptr<local_mr> local_mr)
+   queue_pair::send_awaitable queue_pair::send(std::shared_ptr<local_mr> local_mr)
    {
-      return qp::send_awaitable(this->shared_from_this(), local_mr, IBV_WR_SEND);
+      return queue_pair::send_awaitable(this->shared_from_this(), local_mr, IBV_WR_SEND);
    }
 
-   qp::send_awaitable qp::write(const remote_mr& remote_mr, std::shared_ptr<local_mr> local_mr)
+   queue_pair::send_awaitable queue_pair::write(const remote_mr& remote_mr, std::shared_ptr<local_mr> local_mr)
    {
-      return qp::send_awaitable(this->shared_from_this(), local_mr, IBV_WR_RDMA_WRITE, remote_mr);
+      return queue_pair::send_awaitable(this->shared_from_this(), local_mr, IBV_WR_RDMA_WRITE, remote_mr);
    }
 
-   qp::send_awaitable qp::write_with_imm(const remote_mr& remote_mr, std::shared_ptr<local_mr> local_mr, uint32_t imm)
+   queue_pair::send_awaitable queue_pair::write_with_imm(const remote_mr& remote_mr, std::shared_ptr<local_mr> local_mr, uint32_t imm)
    {
-      return qp::send_awaitable(this->shared_from_this(), local_mr, IBV_WR_RDMA_WRITE_WITH_IMM, remote_mr, imm);
+      return queue_pair::send_awaitable(this->shared_from_this(), local_mr, IBV_WR_RDMA_WRITE_WITH_IMM, remote_mr, imm);
    }
 
-   qp::send_awaitable qp::read(const remote_mr& remote_mr, std::shared_ptr<local_mr> local_mr)
+   queue_pair::send_awaitable queue_pair::read(const remote_mr& remote_mr, std::shared_ptr<local_mr> local_mr)
    {
-      return qp::send_awaitable(this->shared_from_this(), local_mr, IBV_WR_RDMA_READ, remote_mr);
+      return queue_pair::send_awaitable(this->shared_from_this(), local_mr, IBV_WR_RDMA_READ, remote_mr);
    }
 
-   qp::send_awaitable qp::fetch_and_add(const remote_mr& remote_mr, std::shared_ptr<local_mr> local_mr, uint64_t add)
+   queue_pair::send_awaitable queue_pair::fetch_and_add(const remote_mr& remote_mr, std::shared_ptr<local_mr> local_mr, uint64_t add)
    {
       assert(pd_->device->is_fetch_and_add_supported());
-      return qp::send_awaitable(this->shared_from_this(), local_mr, IBV_WR_ATOMIC_FETCH_AND_ADD, remote_mr, add);
+      return queue_pair::send_awaitable(this->shared_from_this(), local_mr, IBV_WR_ATOMIC_FETCH_AND_ADD, remote_mr, add);
    }
 
-   qp::send_awaitable qp::compare_and_swap(const remote_mr& remote_mr, std::shared_ptr<local_mr> local_mr,
+   queue_pair::send_awaitable queue_pair::compare_and_swap(const remote_mr& remote_mr, std::shared_ptr<local_mr> local_mr,
                                            uint64_t compare, uint64_t swap)
    {
       assert(pd_->device->is_compare_and_swap_supported());
-      return qp::send_awaitable(this->shared_from_this(), local_mr, IBV_WR_ATOMIC_CMP_AND_SWP, remote_mr, compare,
+      return queue_pair::send_awaitable(this->shared_from_this(), local_mr, IBV_WR_ATOMIC_CMP_AND_SWP, remote_mr, compare,
                                 swap);
    }
 
-   qp::recv_awaitable::recv_awaitable(std::shared_ptr<qp> qp, void* buffer, size_t length)
+   queue_pair::recv_awaitable::recv_awaitable(std::shared_ptr<queue_pair> qp, void* buffer, size_t length)
       : qp_(qp), local_mr_(std::make_shared<local_mr>(qp_->pd_->reg_mr(buffer, length))), wc_()
    {}
-   qp::recv_awaitable::recv_awaitable(std::shared_ptr<qp> qp, std::shared_ptr<local_mr> local_mr)
+   queue_pair::recv_awaitable::recv_awaitable(std::shared_ptr<queue_pair> qp, std::shared_ptr<local_mr> local_mr)
       : qp_(qp), local_mr_(local_mr), wc_()
    {}
 
-   bool qp::recv_awaitable::await_ready() const noexcept { return false; }
-   bool qp::recv_awaitable::await_suspend(std::coroutine_handle<> h) noexcept
+   bool queue_pair::recv_awaitable::await_ready() const noexcept { return false; }
+   bool queue_pair::recv_awaitable::await_suspend(std::coroutine_handle<> h) noexcept
    {
       auto callback = executor::make_callback([h, this](const ibv_wc& wc) {
          wc_ = wc;
@@ -429,7 +429,7 @@ namespace rdmapp
       return true;
    }
 
-   std::pair<uint32_t, std::optional<uint32_t>> qp::recv_awaitable::await_resume() const
+   std::pair<uint32_t, std::optional<uint32_t>> queue_pair::recv_awaitable::await_resume() const
    {
       if (exception_) [[unlikely]] {
          std::rethrow_exception(exception_);
@@ -441,17 +441,17 @@ namespace rdmapp
       return std::make_pair(wc_.byte_len, std::nullopt);
    }
 
-   qp::recv_awaitable qp::recv(void* buffer, size_t length)
+   queue_pair::recv_awaitable queue_pair::recv(void* buffer, size_t length)
    {
-      return qp::recv_awaitable(this->shared_from_this(), buffer, length);
+      return queue_pair::recv_awaitable(this->shared_from_this(), buffer, length);
    }
 
-   qp::recv_awaitable qp::recv(std::shared_ptr<local_mr> local_mr)
+   queue_pair::recv_awaitable queue_pair::recv(std::shared_ptr<local_mr> local_mr)
    {
-      return qp::recv_awaitable(this->shared_from_this(), local_mr);
+      return queue_pair::recv_awaitable(this->shared_from_this(), local_mr);
    }
 
-   void qp::destroy()
+   void queue_pair::destroy()
    {
       if (qp_ == nullptr) [[unlikely]] {
          return;
@@ -465,6 +465,6 @@ namespace rdmapp
       }
    }
 
-   qp::~qp() { destroy(); }
+   queue_pair::~queue_pair() { destroy(); }
 
 } // namespace rdmapp

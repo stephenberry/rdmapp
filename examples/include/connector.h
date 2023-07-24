@@ -5,7 +5,7 @@
 
 #include <rdmapp/completion_queue.h>
 #include <rdmapp/protected_domain.h>
-#include <rdmapp/qp.h>
+#include <rdmapp/queue_pair.h>
 #include <rdmapp/task.h>
 
 #include "rdmapp/detail/noncopyable.h"
@@ -61,7 +61,7 @@ public:
    *
    * @return task<std::shared_ptr<qp>>
    */
-  task<std::shared_ptr<qp>> connect();
+  task<std::shared_ptr<queue_pair>> connect();
 };
 
 } // namespace rdmapp
