@@ -12,13 +12,10 @@
 
 namespace rdmapp
 {
-   namespace tags::mr
-   {
-      struct local
-      {};
-      struct remote
-      {};
-   }
+   struct local
+   {};
+   struct remote
+   {};
 
    struct protected_domain;
 
@@ -28,7 +25,7 @@ namespace rdmapp
 
    // Represents a local memory region.
    template <>
-   struct mr<tags::mr::local> : public noncopyable
+   struct mr<local> : public noncopyable
    {
       ibv_mr* mr_;
       std::shared_ptr<protected_domain> pd_;
@@ -47,16 +44,16 @@ namespace rdmapp
        *
        * @param other The other mr object to move from.
        */
-      mr(mr<tags::mr::local>&& other) : mr_(std::exchange(other.mr_, nullptr)), pd_(std::move(other.pd_)) {}
+      mr(mr<local>&& other) : mr_(std::exchange(other.mr_, nullptr)), pd_(std::move(other.pd_)) {}
 
       /**
        * @brief Move assignment operator.
        *
        * @param other The other mr to move from.
-       * @return mr<tags::mr::local>& This mr.
+       * @return mr<local>& This mr.
        */
 
-      mr<tags::mr::local>& operator=(mr<tags::mr::local>&& other)
+      mr<local>& operator=(mr<local>&& other)
       {
          mr_ = other.mr_;
          pd_ = std::move(other.pd_);
@@ -124,7 +121,7 @@ namespace rdmapp
 
    // Represents a remote memory region.
    template <>
-   struct mr<tags::mr::remote>
+   struct mr<remote>
    {
       void* addr{}; // The address of the remote memory region.
       uint32_t length{}; // The length of the remote memory region.
@@ -138,12 +135,12 @@ namespace rdmapp
        *
        * @tparam It The iterator type.
        * @param it The iterator to deserialize from.
-       * @return mr<tags::mr::remote> The deserialized remote memory region handle.
+       * @return mr<remote> The deserialized remote memory region handle.
        */
       template <class It>
-      static mr<tags::mr::remote> deserialize(It it)
+      static mr<remote> deserialize(It it)
       {
-         mr<tags::mr::remote> remote_mr;
+         mr<remote> remote_mr;
          detail::deserialize(it, remote_mr.addr);
          detail::deserialize(it, remote_mr.length);
          detail::deserialize(it, remote_mr.rkey);
@@ -151,7 +148,7 @@ namespace rdmapp
       }
    };
 
-   using local_mr = mr<tags::mr::local>;
-   using remote_mr = mr<tags::mr::remote>;
+   using local_mr = mr<local>;
+   using remote_mr = mr<remote>;
 
 } // namespace rdmapp
