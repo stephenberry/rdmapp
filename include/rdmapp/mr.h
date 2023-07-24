@@ -22,18 +22,11 @@ namespace rdmapp
 
    struct pd;
 
-   /**
-    * @brief A remote or local memory region.
-    *
-    * @tparam Tag Either `tags::mr::local` or `tags::mr::remote`.
-    */
+   // A remote or local memory region.
    template <class Tag>
    struct mr;
 
-   /**
-    * @brief Represents a local memory region.
-    *
-    */
+   // Represents a local memory region.
    template <>
    struct mr<tags::mr::local> : public noncopyable
    {
@@ -71,10 +64,7 @@ namespace rdmapp
          return *this;
       }
 
-      /**
-       * @brief Destroy the mr object and deregister the memory region.
-       *
-       */
+      // Destroy the mr object and deregister the memory region.
       ~mr()
       {
          if (mr_ == nullptr) [[unlikely]] {

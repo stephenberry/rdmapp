@@ -6,7 +6,6 @@
 #include <iterator>
 #include <optional>
 #include <string_view>
-#include <vector>
 
 #include "rdmapp/cq.h"
 #include "rdmapp/detail/noncopyable.h"
