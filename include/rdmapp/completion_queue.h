@@ -2,15 +2,8 @@
 
 #include <infiniband/verbs.h>
 
-#include <array>
-#include <cstdio>
-#include <cstring>
-#include <memory>
-#include <stdexcept>
-#include <vector>
-
 #include "rdmapp/detail/debug.h"
-#include "rdmapp/detail/noncopyable.h"
+#include "rdmapp/detail/util.h"
 #include "rdmapp/device.h"
 #include "rdmapp/error.h"
 

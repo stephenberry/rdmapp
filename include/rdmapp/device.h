@@ -2,24 +2,16 @@
 
 #include <infiniband/verbs.h>
 
-#include <cassert>
-#include <cstdint>
-#include <cstdio>
-#include <cstring>
-#include <iterator>
-#include <span>
-#include <stdexcept>
-#include <string>
-#include <memory>
-
 #include "rdmapp/detail/debug.h"
-#include "rdmapp/detail/noncopyable.h"
+#include "rdmapp/detail/util.h"
 #include "rdmapp/error.h"
 
 namespace rdmapp
 {
-   struct device_list_deleter final {
-      void operator()(ibv_device** ptr) const {
+   struct device_list_deleter final
+   {
+      void operator()(ibv_device** ptr) const
+      {
          if (ptr) {
             ::ibv_free_device_list(ptr);
          }
@@ -42,7 +34,7 @@ namespace rdmapp
          if (!device_list_ptr) {
             throw std::runtime_error("failed to get Infiniband devices");
          }
-         devices = { device_list_ptr.get(), size_t(n_devices) };
+         devices = {device_list_ptr.get(), size_t(n_devices)};
       }
    };
 
@@ -62,7 +54,7 @@ namespace rdmapp
          ctx = ::ibv_open_device(device_ptr);
          check_ptr(ctx, "failed to open device");
          check_rc(::ibv_query_port(ctx, port_num, &port_attr_), "failed to query port");
-         struct ibv_query_device_ex_input query = {};
+         ibv_query_device_ex_input query{};
          check_rc(::ibv_query_device_ex(ctx, &query, &attr_ex), "failed to query extended attributes");
 
          auto link_layer = [&]() {
@@ -77,17 +69,10 @@ namespace rdmapp
          RDMAPP_LOG_DEBUG("opened Infiniband device lid=%d link_layer=%s", port_attr_.lid, link_layer);
       }
 
-      /**
-       * @brief Construct a new device object.
-       *
-       * @param device_name The name of the target device.
-       * @param port_num The port number of the target device.
-       */
       device(const std::string& device_name, uint16_t port_num = 1)
       {
          auto list = device_list();
-         auto devices = list.devices;
-         for (auto target : devices) {
+         for (auto target : list.devices) {
             if (::ibv_get_device_name(target) == device_name) {
                open_device(target, port_num);
                return;
@@ -96,12 +81,6 @@ namespace rdmapp
          throw_with("no device named %s found", device_name.c_str());
       }
 
-      /**
-       * @brief Construct a new device object.
-       *
-       * @param device_num The index of the target device.
-       * @param port_num The port number of the target device.
-       */
       device(uint16_t device_num, uint16_t port_num = 1)
       {
          auto list = device_list();
@@ -134,5 +113,4 @@ namespace rdmapp
          }
       }
    };
-
 } // namespace rdmapp

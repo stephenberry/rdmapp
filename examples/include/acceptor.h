@@ -7,7 +7,7 @@
 #include <memory>
 #include <sys/socket.h>
 
-#include <rdmapp/detail/noncopyable.h>
+#include "rdmapp/detail/util.h"
 #include <rdmapp/device.h>
 #include <rdmapp/protected_domain.h>
 #include <rdmapp/queue_pair.h>

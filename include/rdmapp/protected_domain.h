@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "rdmapp/detail/debug.h"
-#include "rdmapp/detail/noncopyable.h"
 #include "rdmapp/device.h"
 #include "rdmapp/error.h"
 #include "rdmapp/mr.h"

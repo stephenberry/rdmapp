@@ -8,7 +8,6 @@
 #include <string_view>
 
 #include "rdmapp/completion_queue.h"
-#include "rdmapp/detail/noncopyable.h"
 #include "rdmapp/detail/serdes.h"
 #include "rdmapp/device.h"
 #include "rdmapp/protected_domain.h"

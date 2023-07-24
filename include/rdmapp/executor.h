@@ -4,10 +4,10 @@
 
 #include <functional>
 #include <thread>
-#include <vector>
 
 #include "rdmapp/detail/blocking_queue.h"
 #include "rdmapp/detail/debug.h"
+#include "rdmapp/detail/util.h"
 
 namespace rdmapp
 {

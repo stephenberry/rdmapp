@@ -4,12 +4,11 @@
 
 #include <atomic>
 #include <functional>
-#include <memory>
-#include <stdexcept>
 #include <thread>
 
 #include "rdmapp/completion_queue.h"
 #include "rdmapp/detail/debug.h"
+#include "rdmapp/detail/util.h"
 #include "rdmapp/executor.h"
 
 namespace rdmapp

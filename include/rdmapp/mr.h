@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "rdmapp/detail/debug.h"
-#include "rdmapp/detail/noncopyable.h"
 #include "rdmapp/detail/serdes.h"
 
 namespace rdmapp

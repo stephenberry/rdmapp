@@ -3,7 +3,7 @@
 #include "socket/event_loop.h"
 #include <memory>
 
-#include <rdmapp/detail/noncopyable.h>
+#include "rdmapp/detail/util.h"
 
 namespace rdmapp {
 namespace socket {

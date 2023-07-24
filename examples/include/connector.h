@@ -8,7 +8,7 @@
 #include <rdmapp/queue_pair.h>
 #include <rdmapp/task.h>
 
-#include "rdmapp/detail/noncopyable.h"
+#include "rdmapp/detail/util.h"
 
 namespace rdmapp {
 

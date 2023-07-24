@@ -7,7 +7,6 @@
 #include <future>
 
 #include "rdmapp/detail/debug.h"
-#include "rdmapp/detail/noncopyable.h"
 
 namespace rdmapp
 {

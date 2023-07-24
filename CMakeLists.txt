@@ -68,6 +68,7 @@ list(APPEND
   PRIVATE
   -fno-rtti
 )
+
 if (RDMAPP_ASAN)
   list(APPEND RDMAPP_COMPILE_OPTIONS PRIVATE -fno-omit-frame-pointer -fsanitize=address)
   list(APPEND RDMAPP_LINK_OPTIONS -fno-omit-frame-pointer -fsanitize=address)
