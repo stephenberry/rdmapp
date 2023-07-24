@@ -41,7 +41,7 @@ namespace rdmapp
 
       inline ibv_cq* make_cq(std::shared_ptr<rdmapp::device> device, size_t num_cqe = 128)
       {
-         ibv_cq* cq = ::ibv_create_cq(device->ctx_, num_cqe, this, nullptr, 0);
+         ibv_cq* cq = ::ibv_create_cq(device->ctx, num_cqe, this, nullptr, 0);
          check_ptr(cq, "failed to create cq");
          RDMAPP_LOG_TRACE("created cq: %p", reinterpret_cast<void*>(cq));
          return cq;

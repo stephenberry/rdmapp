@@ -36,7 +36,7 @@ namespace rdmapp
 
       protected_domain(std::shared_ptr<rdmapp::device> device) : device(device)
       {
-         pd_.reset(::ibv_alloc_pd(device->ctx_));
+         pd_.reset(::ibv_alloc_pd(device->ctx));
          if (!pd_) {
             throw std::runtime_error("failed to alloc pd");
          }

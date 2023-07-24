@@ -49,21 +49,21 @@ namespace rdmapp
    // This class is an abstraction of an Infiniband device.
    struct device : public noncopyable
    {
-      ibv_device* device_{};
+      ibv_device* device_ptr{};
       uint16_t port_num{}; // port number
-      ibv_context* ctx_{};
+      ibv_context* ctx{};
       ibv_port_attr port_attr_{};
-      ibv_device_attr_ex device_attr_ex_{};
+      ibv_device_attr_ex attr_ex{};
 
       void open_device(ibv_device* target, uint16_t port_num_in)
       {
-         device_ = target;
+         device_ptr = target;
          port_num = port_num_in;
-         ctx_ = ::ibv_open_device(device_);
-         check_ptr(ctx_, "failed to open device");
-         check_rc(::ibv_query_port(ctx_, port_num, &port_attr_), "failed to query port");
+         ctx = ::ibv_open_device(device_ptr);
+         check_ptr(ctx, "failed to open device");
+         check_rc(::ibv_query_port(ctx, port_num, &port_attr_), "failed to query port");
          struct ibv_query_device_ex_input query = {};
-         check_rc(::ibv_query_device_ex(ctx_, &query, &device_attr_ex_), "failed to query extended attributes");
+         check_rc(::ibv_query_device_ex(ctx, &query, &attr_ex), "failed to query extended attributes");
 
          auto link_layer = [&]() {
             switch (port_attr_.link_layer) {
@@ -118,14 +118,14 @@ namespace rdmapp
       // Get the lid of the device.
       uint16_t lid() const { return port_attr_.lid; }
 
-      bool is_fetch_and_add_supported() const { return device_attr_ex_.orig_attr.atomic_cap != IBV_ATOMIC_NONE; }
+      bool is_fetch_and_add_supported() const { return attr_ex.orig_attr.atomic_cap != IBV_ATOMIC_NONE; }
 
-      bool is_compare_and_swap_supported() const { return device_attr_ex_.orig_attr.atomic_cap != IBV_ATOMIC_NONE; }
+      bool is_compare_and_swap_supported() const { return attr_ex.orig_attr.atomic_cap != IBV_ATOMIC_NONE; }
 
       ~device()
       {
-         if (ctx_) [[likely]] {
-            if (auto rc = ::ibv_close_device(ctx_); rc != 0) [[unlikely]] {
+         if (ctx) [[likely]] {
+            if (auto rc = ::ibv_close_device(ctx); rc != 0) [[unlikely]] {
                RDMAPP_LOG_ERROR("failed to close device lid=%d: %s", port_attr_.lid, strerror(rc));
             }
             else {
