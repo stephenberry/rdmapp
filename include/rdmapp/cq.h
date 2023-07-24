@@ -20,14 +20,14 @@ namespace rdmapp
 
    struct cq_deleter
    {
-      void operator()(ibv_cq* cq_) const
+      void operator()(ibv_cq* cq) const
       {
-         if (cq_) [[likely]] {
-            if (auto rc = ::ibv_destroy_cq(cq_); rc != 0) [[unlikely]] {
-               RDMAPP_LOG_ERROR("failed to destroy cq %p: %s", reinterpret_cast<void*>(cq_), strerror(errno));
+         if (cq) [[likely]] {
+            if (auto rc = ::ibv_destroy_cq(cq); rc != 0) [[unlikely]] {
+               RDMAPP_LOG_ERROR("failed to destroy cq %p: %s", reinterpret_cast<void*>(cq), strerror(errno));
             }
             else {
-               RDMAPP_LOG_TRACE("destroyed cq: %p", reinterpret_cast<void*>(cq_));
+               RDMAPP_LOG_TRACE("destroyed cq: %p", reinterpret_cast<void*>(cq));
             }
          }
       }
@@ -38,10 +38,10 @@ namespace rdmapp
    {
       inline ibv_cq* make_cq(std::shared_ptr<device> device, size_t num_cqe = 128)
       {
-         ibv_cq* cq_ = ::ibv_create_cq(device->ctx_, num_cqe, this, nullptr, 0);
-         check_ptr(cq_, "failed to create cq");
-         RDMAPP_LOG_TRACE("created cq: %p", reinterpret_cast<void*>(cq_));
-         return cq_;
+         ibv_cq* cq = ::ibv_create_cq(device->ctx_, num_cqe, this, nullptr, 0);
+         check_ptr(cq, "failed to create cq");
+         RDMAPP_LOG_TRACE("created cq: %p", reinterpret_cast<void*>(cq));
+         return cq;
       }
 
      private:
