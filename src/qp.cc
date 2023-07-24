@@ -85,8 +85,8 @@ void qp::create() {
   qp_init_attr.qp_context = this;
 
   if (srq_ != nullptr) {
-    qp_init_attr.srq = srq_->srq_;
-    raw_srq_ = srq_->srq_;
+    qp_init_attr.srq = srq_->srq_.get();
+    raw_srq_ = srq_->srq_.get();
     post_recv_fn = &qp::post_recv_srq;
   } else {
     post_recv_fn = &qp::post_recv_rq;
