@@ -1,6 +1,6 @@
 #include "connector.h"
 
-#include <rdmapp/pd.h>
+#include <rdmapp/protected_domain.h>
 
 #include "qp_transmission.h"
 #include "socket/tcp_connection.h"

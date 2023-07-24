@@ -4,7 +4,7 @@
 #include <memory>
 
 #include <rdmapp/completion_queue.h>
-#include <rdmapp/pd.h>
+#include <rdmapp/protected_domain.h>
 #include <rdmapp/qp.h>
 #include <rdmapp/task.h>
 

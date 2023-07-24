@@ -18,7 +18,7 @@
 #include "rdmapp/detail/serdes.h"
 #include "rdmapp/error.h"
 #include "rdmapp/executor.h"
-#include "rdmapp/pd.h"
+#include "rdmapp/protected_domain.h"
 #include "rdmapp/srq.h"
 
 namespace rdmapp

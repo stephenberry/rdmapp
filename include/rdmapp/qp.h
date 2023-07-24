@@ -11,7 +11,7 @@
 #include "rdmapp/detail/noncopyable.h"
 #include "rdmapp/detail/serdes.h"
 #include "rdmapp/device.h"
-#include "rdmapp/pd.h"
+#include "rdmapp/protected_domain.h"
 #include "rdmapp/srq.h"
 #include "rdmapp/task.h"
 
@@ -42,10 +42,7 @@ namespace rdmapp
       std::vector<uint8_t> user_data;
    };
 
-   /**
-    * @brief This class is an abstraction of an Infiniband Queue Pair.
-    *
-    */
+   // This class is an abstraction of an Infiniband Queue Pair.
    struct qp : public noncopyable, public std::enable_shared_from_this<qp>
    {
      private:

@@ -9,7 +9,7 @@
 
 #include <rdmapp/detail/noncopyable.h>
 #include <rdmapp/device.h>
-#include <rdmapp/pd.h>
+#include <rdmapp/protected_domain.h>
 #include <rdmapp/qp.h>
 
 namespace rdmapp {

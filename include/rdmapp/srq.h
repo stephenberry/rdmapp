@@ -5,7 +5,7 @@
 #include <memory>
 
 #include "rdmapp/detail/debug.h"
-#include "rdmapp/pd.h"
+#include "rdmapp/protected_domain.h"
 
 namespace rdmapp
 {
