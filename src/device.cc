@@ -52,29 +52,4 @@ struct ibv_device *device_list::at(size_t i) {
   return devices_[i];
 }
 
-device::device(uint16_t device_num, uint16_t port_num)
-    : device_(nullptr), port_num_(0) {
-  auto devices = device_list();
-  if (device_num >= devices.size()) {
-    char buffer[kErrorStringBufferSize] = {0};
-    ::snprintf(buffer, sizeof(buffer),
-               "requested device number %d out of range, %lu devices available",
-               device_num, devices.size());
-    throw std::invalid_argument(buffer);
-  }
-  open_device(devices.at(device_num), port_num);
-}
-
-uint16_t device::port_num() const { return port_num_; }
-
-uint16_t device::lid() const { return port_attr_.lid; }
-
-bool device::is_compare_and_swap_supported() const {
-  return device_attr_ex_.orig_attr.atomic_cap != IBV_ATOMIC_NONE;
-}
-
-bool device::is_fetch_and_add_supported() const {
-  return device_attr_ex_.orig_attr.atomic_cap != IBV_ATOMIC_NONE;
-}
-
 } // namespace rdmapp

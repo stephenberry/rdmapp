@@ -131,21 +131,22 @@ namespace rdmapp
        * @param device_num The index of the target device.
        * @param port_num The port number of the target device.
        */
-      device(uint16_t device_num = 0, uint16_t port_num = 1);
+      device(uint16_t device_num, uint16_t port_num = 1) : device_(nullptr), port_num_(0)
+      {
+         auto devices = device_list();
+         if (device_num >= devices.size()) {
+            char buffer[kErrorStringBufferSize]{0};
+            ::snprintf(buffer, sizeof(buffer), "requested device number %d out of range, %lu devices available",
+                       device_num, devices.size());
+            throw std::invalid_argument(buffer);
+         }
+         open_device(devices.at(device_num), port_num);
+      }
 
-      /**
-       * @brief Get the device port number.
-       *
-       * @return uint16_t The port number.
-       */
-      uint16_t port_num() const;
+      uint16_t port_num() const { return port_num_; }
 
-      /**
-       * @brief Get the lid of the device.
-       *
-       * @return uint16_t The lid.
-       */
-      uint16_t lid() const;
+      // Get the lid of the device.
+      uint16_t lid() const { return port_attr_.lid; }
 
       /**
        * @brief Checks if the device supports fetch and add.
@@ -153,7 +154,7 @@ namespace rdmapp
        * @return true Supported.
        * @return false Not supported.
        */
-      bool is_fetch_and_add_supported() const;
+      bool is_fetch_and_add_supported() const { return device_attr_ex_.orig_attr.atomic_cap != IBV_ATOMIC_NONE; }
 
       /**
        * @brief Checks if the device supports compare and swap.
@@ -161,7 +162,7 @@ namespace rdmapp
        * @return true Supported.
        * @return false Not supported.
        */
-      bool is_compare_and_swap_supported() const;
+      bool is_compare_and_swap_supported() const { return device_attr_ex_.orig_attr.atomic_cap != IBV_ATOMIC_NONE; }
 
       ~device()
       {
