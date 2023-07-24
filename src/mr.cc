@@ -13,27 +13,7 @@ namespace rdmapp {
 
 
 
-local_mr &local_mr::operator=(local_mr &&other) {
-  mr_ = other.mr_;
-  pd_ = std::move(other.pd_);
-  other.mr_ = nullptr;
-  return *this;
-}
 
-local_mr::~mr() {
-  if (mr_ == nullptr) [[unlikely]] {
-    // This mr is moved.
-    return;
-  }
-  auto addr = mr_->addr;
-  if (auto rc = ::ibv_dereg_mr(mr_); rc != 0) [[unlikely]] {
-    RDMAPP_LOG_ERROR("failed to dereg mr %p addr=%p",
-                     reinterpret_cast<void *>(mr_), addr);
-  } else {
-    RDMAPP_LOG_TRACE("dereg mr %p addr=%p", reinterpret_cast<void *>(mr_),
-                     addr);
-  }
-}
 
 std::vector<uint8_t> local_mr::serialize() const {
   std::vector<uint8_t> buffer;
