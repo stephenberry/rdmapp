@@ -67,16 +67,14 @@ namespace rdmapp
       // Destroy the mr object and deregister the memory region.
       ~mr()
       {
-         if (mr_ == nullptr) [[unlikely]] {
-            // This mr is moved.
-            return;
-         }
-         auto addr = mr_->addr;
-         if (auto rc = ::ibv_dereg_mr(mr_); rc != 0) [[unlikely]] {
-            RDMAPP_LOG_ERROR("failed to dereg mr %p addr=%p", reinterpret_cast<void*>(mr_), addr);
-         }
-         else {
-            RDMAPP_LOG_TRACE("dereg mr %p addr=%p", reinterpret_cast<void*>(mr_), addr);
+         if (mr_) [[likely]] {
+            auto addr = mr_->addr;
+            if (auto rc = ::ibv_dereg_mr(mr_); rc != 0) [[unlikely]] {
+               RDMAPP_LOG_ERROR("failed to dereg mr %p addr=%p", reinterpret_cast<void*>(mr_), addr);
+            }
+            else {
+               RDMAPP_LOG_TRACE("dereg mr %p addr=%p", reinterpret_cast<void*>(mr_), addr);
+            }
          }
       }
 
