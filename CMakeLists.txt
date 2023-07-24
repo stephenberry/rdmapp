@@ -46,7 +46,6 @@ set(RDMAPP_SOURCE_FILES
   src/device.cc
   src/qp.cc
   src/srq.cc
-  src/mr.cc
 )
 
 set(RDMAPP_LINK_LIBRARIES ibverbs Threads::Threads)

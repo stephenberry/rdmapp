@@ -110,28 +110,28 @@ namespace rdmapp
        *
        * @return void* The address of the memory region.
        */
-      void* addr() const;
+      void* addr() const { return mr_->addr; }
 
       /**
        * @brief Get the length of the memory region.
        *
        * @return size_t The length of the memory region.
        */
-      size_t length() const;
+      size_t length() const { return mr_->length; }
 
       /**
        * @brief Get the remote key of the memory region.
        *
        * @return uint32_t The remote key of the memory region.
        */
-      uint32_t rkey() const;
+      uint32_t rkey() const { return mr_->rkey; }
 
       /**
        * @brief Get the local key of the memory region.
        *
        * @return uint32_t The local key of the memory region.
        */
-      uint32_t lkey() const;
+      uint32_t lkey() const { return mr_->lkey; }
    };
 
    /**
@@ -175,21 +175,21 @@ namespace rdmapp
        *
        * @return void* The address of the remote memory region.
        */
-      void* addr();
+      void* addr() { return addr_; }
 
       /**
        * @brief Get the length of the remote memory region.
        *
        * @return uint32_t The length of the remote memory region.
        */
-      uint32_t length();
+      uint32_t length() { return length_; }
 
       /**
        * @brief Get the remote key of the memory region.
        *
        * @return uint32_t The remote key of the memory region.
        */
-      uint32_t rkey();
+      uint32_t rkey() { return rkey_; }
 
       /**
        * @brief Deserialize a remote memory region handle.
