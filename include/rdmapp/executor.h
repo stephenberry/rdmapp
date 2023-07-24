@@ -11,15 +11,13 @@
 
 namespace rdmapp
 {
-   /**
-    * @brief This class is used to execute callbacks of completion entries.
-    */
+   // This class is used to execute callbacks of completion entries.
    struct executor
    {
      private:
-      using work_queue = detail::blocking_queue<ibv_wc>;
+      using work_queue_t = detail::blocking_queue<ibv_wc>;
       std::vector<std::thread> workers_;
-      work_queue work_queue_;
+      work_queue_t work_queue_;
       void worker_fn(size_t worker_id)
       {
          try {
@@ -30,13 +28,13 @@ namespace rdmapp
                destroy_callback(cb);
             }
          }
-         catch (work_queue::queue_closed_error&) {
+         catch (work_queue_t::queue_closed_error&) {
             RDMAPP_LOG_TRACE("executor worker %lu exited", worker_id);
          }
       }
 
      public:
-      using queue_closed_error = work_queue::queue_closed_error;
+      using queue_closed_error = work_queue_t::queue_closed_error;
       using callback_fn = std::function<void(const ibv_wc& wc)>;
       using callback_ptr = callback_fn*;
 
