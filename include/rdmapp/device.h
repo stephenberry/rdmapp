@@ -27,7 +27,7 @@ namespace rdmapp
    };
 
    // This class holds a list of devices available on the system.
-   struct device_list : public noncopyable
+   struct device_list final
    {
       std::span<ibv_device*> devices{};
       std::unique_ptr<ibv_device*, device_list_deleter> device_list_ptr{};
