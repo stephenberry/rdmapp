@@ -43,7 +43,6 @@ if (RDMAPP_BUILD_DOCS)
 endif ()
 
 set(RDMAPP_SOURCE_FILES
-  src/device.cc
   src/qp.cc
   src/srq.cc
 )
