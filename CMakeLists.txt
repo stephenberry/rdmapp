@@ -44,7 +44,6 @@ endif ()
 
 set(RDMAPP_SOURCE_FILES
   src/qp.cc
-  src/srq.cc
 )
 
 set(RDMAPP_LINK_LIBRARIES ibverbs Threads::Threads)
