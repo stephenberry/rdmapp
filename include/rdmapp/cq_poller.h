@@ -34,19 +34,19 @@ namespace rdmapp
       {
          while (!stopped) {
             try {
-               auto nr_wc = size_t(cq->poll(wc_vec));
-               for (size_t i = 0; i < nr_wc; ++i) {
+               auto nr_wc = cq->poll(wc_vec);
+               for (int i = 0; i < nr_wc; ++i) {
                   auto& wc = wc_vec[i];
                   RDMAPP_LOG_TRACE("polled cqe wr_id=%p status=%d", reinterpret_cast<void*>(wc.wr_id), wc.status);
                   exec->process_wc(wc);
                }
             }
-            catch (std::runtime_error& e) {
+            catch (const std::runtime_error& e) {
                RDMAPP_LOG_ERROR("%s", e.what());
                stopped = true;
                return;
             }
-            catch (executor::queue_closed_error&) {
+            catch (const executor::queue_closed_error&) {
                stopped = true;
                return;
             }

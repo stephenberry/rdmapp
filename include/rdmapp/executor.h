@@ -16,8 +16,9 @@ namespace rdmapp
    {
      private:
       using work_queue_t = detail::blocking_queue<ibv_wc>;
-      std::vector<std::thread> workers_;
+      std::vector<std::thread> workers;
       work_queue_t work_queue;
+
       void worker_fn(size_t worker_id)
       {
          try {
@@ -38,15 +39,10 @@ namespace rdmapp
       using callback_fn = std::function<void(const ibv_wc& wc)>;
       using callback_ptr = callback_fn*;
 
-      /**
-       * @brief Construct a new executor object
-       *
-       * @param nr_worker The number of worker threads to use.
-       */
-      executor(size_t nr_worker = 4)
+      executor(size_t n_worker_threads = 4)
       {
-         for (size_t i = 0; i < nr_worker; ++i) {
-            workers_.emplace_back(&executor::worker_fn, this, i);
+         for (size_t i = 0; i < n_worker_threads; ++i) {
+            workers.emplace_back(&executor::worker_fn, this, i);
          }
       }
 
@@ -57,16 +53,12 @@ namespace rdmapp
        */
       void process_wc(const ibv_wc& wc) { work_queue.push(wc); }
 
-      /**
-       * @brief Shutdown the executor.
-       *
-       */
       void shutdown() { work_queue.close(); }
 
       ~executor()
       {
          shutdown();
-         for (auto&& worker : workers_) {
+         for (auto& worker : workers) {
             worker.join();
          }
       }
@@ -85,11 +77,6 @@ namespace rdmapp
          return new executor::callback_fn(cb);
       }
 
-      /**
-       * @brief Destroy a callback function.
-       *
-       * @param cb The callback function pointer.
-       */
       static void destroy_callback(callback_ptr cb) { delete cb; }
    };
 
