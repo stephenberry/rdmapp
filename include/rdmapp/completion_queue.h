@@ -33,7 +33,6 @@ namespace rdmapp
       }
    };
 
-   // This class is an abstraction of a Completion Queue.
    struct completion_queue
    {
       std::shared_ptr<rdmapp::device> device{}; // The device to use.

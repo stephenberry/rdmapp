@@ -29,7 +29,6 @@ namespace rdmapp
       }
    };
 
-   // This class is an abstraction of a Protection Domain.
    struct protected_domain : public noncopyable, public std::enable_shared_from_this<protected_domain>
    {
       std::shared_ptr<rdmapp::device> device{};

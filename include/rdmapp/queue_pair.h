@@ -42,7 +42,6 @@ namespace rdmapp
       std::vector<uint8_t> user_data;
    };
 
-   // Infiniband Queue Pair.
    struct queue_pair : public noncopyable, public std::enable_shared_from_this<queue_pair>
    {
      private:

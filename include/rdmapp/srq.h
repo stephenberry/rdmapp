@@ -23,7 +23,7 @@ namespace rdmapp
       }
    };
 
-   // This class represents a Shared Receive Queue.
+   // Shared Receive Queue.
    struct srq
    {
       std::shared_ptr<protected_domain> pd_{};
