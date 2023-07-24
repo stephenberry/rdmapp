@@ -138,52 +138,12 @@ namespace rdmapp
    template <>
    struct mr<tags::mr::remote>
    {
-      void* addr_{}; // The address of the remote memory region.
-      uint32_t length_{}; // The length of the remote memory region.
-      uint32_t rkey_{}; // The remote key of the memory region.
+      void* addr{}; // The address of the remote memory region.
+      uint32_t length{}; // The length of the remote memory region.
+      uint32_t rkey{}; // The remote key of the memory region.
 
-     public:
       // The size of a serialized remote memory region.
-      static constexpr size_t kSerializedSize = sizeof(addr_) + sizeof(length_) + sizeof(rkey_);
-
-      mr() = default;
-
-      /**
-       * @brief Construct a new remote mr object
-       *
-       * @param addr The address of the remote memory region.
-       * @param length The length of the remote memory region.
-       * @param rkey The remote key of the remote memory region.
-       */
-      mr(void* addr, uint32_t length, uint32_t rkey) : addr_(addr), length_(length), rkey_(rkey) {}
-
-      /**
-       * @brief Construct a new remote mr object copied from another
-       *
-       * @param other The other remote mr object to copy from.
-       */
-      mr(const mr<tags::mr::remote>& other) = default;
-
-      /**
-       * @brief Get the address of the remote memory region.
-       *
-       * @return void* The address of the remote memory region.
-       */
-      void* addr() { return addr_; }
-
-      /**
-       * @brief Get the length of the remote memory region.
-       *
-       * @return uint32_t The length of the remote memory region.
-       */
-      uint32_t length() { return length_; }
-
-      /**
-       * @brief Get the remote key of the memory region.
-       *
-       * @return uint32_t The remote key of the memory region.
-       */
-      uint32_t rkey() { return rkey_; }
+      static constexpr size_t kSerializedSize = sizeof(addr) + sizeof(length) + sizeof(rkey);
 
       /**
        * @brief Deserialize a remote memory region handle.
@@ -196,9 +156,9 @@ namespace rdmapp
       static mr<tags::mr::remote> deserialize(It it)
       {
          mr<tags::mr::remote> remote_mr;
-         detail::deserialize(it, remote_mr.addr_);
-         detail::deserialize(it, remote_mr.length_);
-         detail::deserialize(it, remote_mr.rkey_);
+         detail::deserialize(it, remote_mr.addr);
+         detail::deserialize(it, remote_mr.length);
+         detail::deserialize(it, remote_mr.rkey);
          return remote_mr;
       }
    };

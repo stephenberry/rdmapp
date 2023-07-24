@@ -79,8 +79,8 @@ rdmapp::task<void> client(rdmapp::connector &connector) {
   char remote_mr_serialized[rdmapp::remote_mr::kSerializedSize];
   co_await qp->recv(remote_mr_serialized, sizeof(remote_mr_serialized));
   auto remote_mr = rdmapp::remote_mr::deserialize(remote_mr_serialized);
-  std::cout << "Received mr addr=" << remote_mr.addr()
-            << " length=" << remote_mr.length() << " rkey=" << remote_mr.rkey()
+  std::cout << "Received mr addr=" << remote_mr.addr
+            << " length=" << remote_mr.length << " rkey=" << remote_mr.rkey
             << " from server" << std::endl;
   n = co_await qp->read(remote_mr, buffer, sizeof(buffer));
   std::cout << "Read " << n << " bytes from server: " << buffer << std::endl;
@@ -91,9 +91,9 @@ rdmapp::task<void> client(rdmapp::connector &connector) {
   char counter_mr_serialized[rdmapp::remote_mr::kSerializedSize];
   co_await qp->recv(counter_mr_serialized, sizeof(counter_mr_serialized));
   auto counter_mr = rdmapp::remote_mr::deserialize(counter_mr_serialized);
-  std::cout << "Received mr addr=" << counter_mr.addr()
-            << " length=" << counter_mr.length()
-            << " rkey=" << counter_mr.rkey() << " from server" << std::endl;
+  std::cout << "Received mr addr=" << counter_mr.addr
+            << " length=" << counter_mr.length
+            << " rkey=" << counter_mr.rkey << " from server" << std::endl;
   uint64_t counter = 0;
   co_await qp->fetch_and_add(counter_mr, &counter, sizeof(counter), 1);
   std::cout << "Fetched and added from server: " << counter << std::endl;

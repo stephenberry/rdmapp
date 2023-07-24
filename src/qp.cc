@@ -289,17 +289,17 @@ bool qp::send_awaitable::await_suspend(std::coroutine_handle<> h) noexcept {
   send_wr.send_flags = IBV_SEND_SIGNALED;
   send_wr.sg_list = &send_sge;
   if (is_rdma()) {
-    assert(remote_mr_.addr() != nullptr);
-    send_wr.wr.rdma.remote_addr = reinterpret_cast<uint64_t>(remote_mr_.addr());
-    send_wr.wr.rdma.rkey = remote_mr_.rkey();
+    assert(remote_mr_.addr != nullptr);
+    send_wr.wr.rdma.remote_addr = reinterpret_cast<uint64_t>(remote_mr_.addr);
+    send_wr.wr.rdma.rkey = remote_mr_.rkey;
     if (opcode_ == IBV_WR_RDMA_WRITE_WITH_IMM) {
       send_wr.imm_data = imm_;
     }
   } else if (is_atomic()) {
-    assert(remote_mr_.addr() != nullptr);
+    assert(remote_mr_.addr != nullptr);
     send_wr.wr.atomic.remote_addr =
-        reinterpret_cast<uint64_t>(remote_mr_.addr());
-    send_wr.wr.atomic.rkey = remote_mr_.rkey();
+        reinterpret_cast<uint64_t>(remote_mr_.addr);
+    send_wr.wr.atomic.rkey = remote_mr_.rkey;
     send_wr.wr.atomic.compare_add = compare_add_;
     if (opcode_ == IBV_WR_ATOMIC_CMP_AND_SWP) {
       send_wr.wr.atomic.swap = swap_;

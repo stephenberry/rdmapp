@@ -27,8 +27,8 @@ rdmapp::task<void> client_worker(std::shared_ptr<rdmapp::qp> qp) {
   char remote_mr_serialized[rdmapp::remote_mr::kSerializedSize];
   co_await qp->recv(remote_mr_serialized, sizeof(remote_mr_serialized));
   auto remote_mr = rdmapp::remote_mr::deserialize(remote_mr_serialized);
-  std::cout << "Received mr addr=" << remote_mr.addr()
-            << " length=" << remote_mr.length() << " rkey=" << remote_mr.rkey()
+  std::cout << "Received mr addr=" << remote_mr.addr
+            << " length=" << remote_mr.length << " rkey=" << remote_mr.rkey
             << " from server" << std::endl;
   for (size_t i = 0; i < kSendCount; ++i) {
     co_await qp->write(remote_mr, local_mr);
