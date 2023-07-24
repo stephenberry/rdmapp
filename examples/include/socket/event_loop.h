@@ -19,7 +19,7 @@ class event_loop {
   int epoll_fd_;
   int close_event_fd_;
   const size_t max_events_;
-  std::shared_mutex mutex_;
+  std::shared_mutex mutex;
   std::unordered_map<int, std::weak_ptr<channel>> channels_;
 
   void register_channel(std::shared_ptr<channel> channel,

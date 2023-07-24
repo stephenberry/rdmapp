@@ -70,14 +70,14 @@ void event_loop::register_channel(std::shared_ptr<channel> channel,
   RDMAPP_LOG_TRACE("epoll add fd=%d events=%s", channel->fd(),
                    events_string(event->events).c_str());
   {
-    std::lock_guard lock(mutex_);
+    std::lock_guard lock(mutex);
     channels_.insert(std::make_pair(channel->fd(), channel));
   }
   auto rc = ::epoll_ctl(epoll_fd_, EPOLL_CTL_ADD, channel->fd(), event);
   try {
     check_errno(rc, "failed to add fd to epoll");
   } catch (...) {
-    std::lock_guard lock(mutex_);
+    std::lock_guard lock(mutex);
     channels_.erase(channel->fd());
     throw;
   }
@@ -106,7 +106,7 @@ void event_loop::deregister(socket::channel &channel) {
     check_errno(rc, "failed to remove fd from epoll");
   }
   {
-    std::lock_guard lock(mutex_);
+    std::lock_guard lock(mutex);
     channels_.erase(channel.fd());
   }
 }
@@ -130,7 +130,7 @@ void event_loop::loop() {
         continue;
       }
       auto channel = [&]() {
-        std::shared_lock lock(mutex_);
+        std::shared_lock lock(mutex);
         auto it = channels_.find(fd);
         assert(it != channels_.end());
         return it->second.lock();
@@ -139,19 +139,19 @@ void event_loop::loop() {
         if (event.events & EPOLLIN || event.events & EPOLLERR) {
           channel->readable_callback();
           if (event.events & EPOLLERR) {
-            std::lock_guard lock(mutex_);
+            std::lock_guard lock(mutex);
             channels_.erase(fd);
           }
         }
         if (event.events & EPOLLOUT || event.events & EPOLLERR) {
           channel->writable_callback();
           if (event.events & EPOLLERR) {
-            std::lock_guard lock(mutex_);
+            std::lock_guard lock(mutex);
             channels_.erase(fd);
           }
         }
       } else {
-        std::lock_guard lock(mutex_);
+        std::lock_guard lock(mutex);
         channels_.erase(fd);
       }
     }

@@ -1,49 +1,58 @@
 #pragma once
 
+#include <infiniband/verbs.h>
+
 #include <atomic>
 #include <functional>
 #include <memory>
+#include <stdexcept>
 #include <thread>
 
-#include <infiniband/verbs.h>
-
 #include "rdmapp/cq.h"
+#include "rdmapp/detail/debug.h"
 #include "rdmapp/executor.h"
 
-namespace rdmapp {
+namespace rdmapp
+{
+   /**
+    * @brief This class is used to poll a completion queue.
+    */
+   struct cq_poller
+   {
+      std::shared_ptr<cq> cq_; // The completion queue to poll.
+      std::shared_ptr<executor> executor_; // The executor to use to process the completion entries.
+      size_t batch_size = 16; // The number of completion entries to poll at a time.
+      std::atomic<bool> stopped{false};
+      std::thread poller_thread_{&cq_poller::worker, this};
+      std::vector<struct ibv_wc> wc_vec_ = std::vector<struct ibv_wc>(batch_size);
 
-/**
- * @brief This class is used to poll a completion queue.
- *
- */
-class cq_poller {
-  std::shared_ptr<cq> cq_;
-  std::atomic<bool> stopped_;
-  std::thread poller_thread_;
-  std::shared_ptr<executor> executor_;
-  std::vector<struct ibv_wc> wc_vec_;
-  void worker();
+      ~cq_poller()
+      {
+         stopped = true;
+         poller_thread_.join();
+      }
 
-public:
-  /**
-   * @brief Construct a new cq poller object. A new executor will be created.
-   *
-   * @param cq The completion queue to poll.
-   * @param batch_size The number of completion entries to poll at a time.
-   */
-  cq_poller(std::shared_ptr<cq> cq, size_t batch_size = 16);
-
-  /**
-   * @brief Construct a new cq poller object.
-   *
-   * @param cq The completion queue to poll.
-   * @param executor The executor to use to process the completion entries.
-   * @param batch_size The number of completion entries to poll at a time.
-   */
-  cq_poller(std::shared_ptr<cq> cq, std::shared_ptr<executor> executor,
-            size_t batch_size = 16);
-
-  ~cq_poller();
-};
-
+      void worker()
+      {
+         while (!stopped) {
+            try {
+               auto nr_wc = cq_->poll(wc_vec_);
+               for (size_t i = 0; i < nr_wc; ++i) {
+                  auto& wc = wc_vec_[i];
+                  RDMAPP_LOG_TRACE("polled cqe wr_id=%p status=%d", reinterpret_cast<void*>(wc.wr_id), wc.status);
+                  executor_->process_wc(wc);
+               }
+            }
+            catch (std::runtime_error& e) {
+               RDMAPP_LOG_ERROR("%s", e.what());
+               stopped = true;
+               return;
+            }
+            catch (executor::queue_closed_error&) {
+               stopped = true;
+               return;
+            }
+         }
+      }
+   };
 } // namespace rdmapp

@@ -53,7 +53,7 @@ class device : public noncopyable {
 
   uint16_t port_num_;
   friend struct pd;
-  friend class cq;
+  friend struct cq;
   friend struct qp;
   friend class srq;
   void open_device(struct ibv_device *target, uint16_t port_num);

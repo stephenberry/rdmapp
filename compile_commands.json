@@ -26,11 +26,6 @@
 },
 {
   "directory": "/workspaces/rdmapp/build",
-  "command": "/usr/bin/g++ -DSOURCE_PATH_LENGTH=19 -I/workspaces/rdmapp/include -g -flto -fno-rtti -Wall -Wextra -pedantic -Werror -std=gnu++20 -o CMakeFiles/rdmapp.dir/src/cq_poller.cc.o -c /workspaces/rdmapp/src/cq_poller.cc",
-  "file": "/workspaces/rdmapp/src/cq_poller.cc"
-},
-{
-  "directory": "/workspaces/rdmapp/build",
   "command": "/usr/bin/g++ -DSOURCE_PATH_LENGTH=19 -I/workspaces/rdmapp/include -g -flto -fno-rtti -Wall -Wextra -pedantic -Werror -std=gnu++20 -o CMakeFiles/rdmapp.dir/src/executor.cc.o -c /workspaces/rdmapp/src/executor.cc",
   "file": "/workspaces/rdmapp/src/executor.cc"
 },
