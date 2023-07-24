@@ -19,15 +19,34 @@ namespace rdmapp
 {
    struct qp;
 
-   /**
-    * @brief This class is an abstraction of a Completion Queue.
-    *
-    */
+   struct cq_deleter
+   {
+      void operator()(ibv_cq* cq_) const {
+        if (cq_) [[likely]] {
+            if (auto rc = ::ibv_destroy_cq(cq_); rc != 0) [[unlikely]] {
+               RDMAPP_LOG_ERROR("failed to destroy cq %p: %s", reinterpret_cast<void*>(cq_), strerror(errno));
+            }
+            else {
+               RDMAPP_LOG_TRACE("destroyed cq: %p", reinterpret_cast<void*>(cq_));
+            }
+         }
+      }
+   };
+
+   // This class is an abstraction of a Completion Queue.
    struct cq : public noncopyable
    {
+inline ibv_cq* make_cq(std::shared_ptr<device> device, size_t num_cqe = 128) {
+         ibv_cq* cq_ = ::ibv_create_cq(device->ctx_, num_cqe, this, nullptr, 0);
+         check_ptr(cq_, "failed to create cq");
+         RDMAPP_LOG_TRACE("created cq: %p", reinterpret_cast<void*>(cq_));
+         return cq_;
+   }
+
      private:
-      std::shared_ptr<device> device_;
-      struct ibv_cq* cq_;
+      std::shared_ptr<device> device_{};
+      size_t num_cqe{ 128 };
+      std::unique_ptr<ibv_cq, cq_deleter> cq_{ make_cq(device_, num_cqe) };
       friend struct qp;
 
      public:
@@ -37,12 +56,7 @@ namespace rdmapp
        * @param device The device to use.
        * @param num_cqe The number of completion entries to allocate.
        */
-      cq(std::shared_ptr<device> device, size_t num_cqe = 128) : device_(device)
-      {
-         cq_ = ::ibv_create_cq(device->ctx_, num_cqe, this, nullptr, 0);
-         check_ptr(cq_, "failed to create cq");
-         RDMAPP_LOG_TRACE("created cq: %p", reinterpret_cast<void*>(cq_));
-      }
+      cq(std::shared_ptr<device> device, size_t num_cqe = 128) : device_(device), num_cqe(num_cqe) {}
 
       /**
        * @brief Poll the completion queue.
@@ -53,9 +67,9 @@ namespace rdmapp
        * @exception std::runtime_exception Error occured while polling the
        * completion queue.
        */
-      bool poll(struct ibv_wc& wc)
+      bool poll(ibv_wc& wc)
       {
-         if (auto rc = ::ibv_poll_cq(cq_, 1, &wc); rc < 0) [[unlikely]] {
+         if (auto rc = ::ibv_poll_cq(cq_.get(), 1, &wc); rc < 0) [[unlikely]] {
             check_rc(-rc, "failed to poll cq");
          }
          else if (rc == 0) {
@@ -77,35 +91,22 @@ namespace rdmapp
        * @exception std::runtime_exception Error occured while polling the
        * completion queue.
        */
-      size_t poll(std::vector<struct ibv_wc>& wc_vec) { return poll(&wc_vec[0], wc_vec.size()); }
+      size_t poll(std::vector<ibv_wc>& wc_vec) { return poll(&wc_vec[0], wc_vec.size()); }
 
       template <class It>
       size_t poll(It wc, int count)
       {
-         int rc = ::ibv_poll_cq(cq_, count, wc);
+         int rc = ::ibv_poll_cq(cq_.get(), count, wc);
          if (rc < 0) {
             throw_with("failed to poll cq: %s (rc=%d)", strerror(rc), rc);
          }
          return rc;
       }
+
       template <int N>
-      size_t poll(std::array<struct ibv_wc, N>& wc_array)
+      size_t poll(std::array<ibv_wc, N>& wc_array)
       {
          return poll(&wc_array[0], N);
-      }
-      
-      ~cq()
-      {
-         if (cq_ == nullptr) [[unlikely]] {
-            return;
-         }
-
-         if (auto rc = ::ibv_destroy_cq(cq_); rc != 0) [[unlikely]] {
-            RDMAPP_LOG_ERROR("failed to destroy cq %p: %s", reinterpret_cast<void*>(cq_), strerror(errno));
-         }
-         else {
-            RDMAPP_LOG_TRACE("destroyed cq: %p", reinterpret_cast<void*>(cq_));
-         }
       }
    };
 

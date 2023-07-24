@@ -70,7 +70,7 @@ namespace rdmapp
     * @brief This class is an abstraction of an Infiniband device.
     *
     */
-   class device : public noncopyable
+   struct device : public noncopyable
    {
       struct ibv_device* device_;
       struct ibv_context* ctx_;
@@ -78,13 +78,8 @@ namespace rdmapp
       struct ibv_device_attr_ex device_attr_ex_;
 
       uint16_t port_num_;
-      friend struct pd;
-      friend struct cq;
-      friend struct qp;
-      friend struct srq;
       void open_device(struct ibv_device* target, uint16_t port_num);
 
-     public:
       /**
        * @brief Construct a new device object.
        *
