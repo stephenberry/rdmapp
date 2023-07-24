@@ -17,10 +17,10 @@ namespace rdmapp
    // This class is used to poll a completion queue.
    struct cq_poller
    {
-      std::shared_ptr<rdmapp::completion_queue> cq{}; // The completion queue to poll.
+      std::shared_ptr<completion_queue> cq{}; // The completion queue to poll.
       std::shared_ptr<executor> exec{}; // The executor to use to process the completion entries.
       size_t batch_size = 16; // The number of completion entries to poll at a time.
-      std::atomic<bool> stopped{false};
+      std::atomic<bool> stopped{};
       std::thread poller_thread{&cq_poller::worker, this};
       std::vector<ibv_wc> wc_vec = std::vector<ibv_wc>(batch_size);
 

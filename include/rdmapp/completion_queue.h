@@ -45,7 +45,7 @@ namespace rdmapp
       }
 
      private:
-      std::shared_ptr<device> device_{};
+      std::shared_ptr<rdmapp::device> device_{};
       size_t num_cqe{128};
       std::unique_ptr<ibv_cq, cq_deleter> cq_{make_cq(device_, num_cqe)};
       friend struct qp;

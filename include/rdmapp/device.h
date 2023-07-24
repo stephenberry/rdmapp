@@ -18,7 +18,7 @@
 
 namespace rdmapp
 {
-   struct device_list_deleter {
+   struct device_list_deleter final {
       void operator()(ibv_device** ptr) const {
          if (ptr) {
             ::ibv_free_device_list(ptr);
