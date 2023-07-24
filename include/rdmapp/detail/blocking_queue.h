@@ -15,7 +15,7 @@ namespace rdmapp::detail
 
       void push(const T& item)
       {
-         std::lock_guard lock(mutex);
+         std::lock_guard lock(mtx);
          if (closed) {
             throw queue_closed_error();
          }
@@ -24,7 +24,7 @@ namespace rdmapp::detail
       }
       T pop()
       {
-         std::unique_lock lock(mutex);
+         std::unique_lock lock(mtx);
          cv.wait(lock, [this]() { return !queue.empty() || closed; });
          if (queue.empty()) {
             throw queue_closed_error();
@@ -35,13 +35,13 @@ namespace rdmapp::detail
       }
       void close()
       {
-         std::lock_guard lock(mutex);
+         std::lock_guard lock(mtx);
          closed = true;
          cv.notify_all();
       }
 
       private:
-      std::mutex mutex{};
+      std::mutex mtx{};
       std::condition_variable cv{};
       std::queue<T> queue{};
       bool closed{};

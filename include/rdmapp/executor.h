@@ -17,12 +17,12 @@ namespace rdmapp
      private:
       using work_queue_t = detail::blocking_queue<ibv_wc>;
       std::vector<std::thread> workers_;
-      work_queue_t work_queue_;
+      work_queue_t work_queue;
       void worker_fn(size_t worker_id)
       {
          try {
             while (true) {
-               auto wc = work_queue_.pop();
+               auto wc = work_queue.pop();
                auto cb = reinterpret_cast<callback_ptr>(wc.wr_id);
                (*cb)(wc);
                destroy_callback(cb);
@@ -55,13 +55,13 @@ namespace rdmapp
        *
        * @param wc The completion entry to process.
        */
-      void process_wc(const ibv_wc& wc) { work_queue_.push(wc); }
+      void process_wc(const ibv_wc& wc) { work_queue.push(wc); }
 
       /**
        * @brief Shutdown the executor.
        *
        */
-      void shutdown() { work_queue_.close(); }
+      void shutdown() { work_queue.close(); }
 
       ~executor()
       {
