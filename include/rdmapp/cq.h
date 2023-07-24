@@ -87,14 +87,14 @@ namespace rdmapp
        *
        * @param wc_vec If any, this will be filled with completion entries up to the
        * size of the vector.
-       * @return size_t The number of completion entries. 0 means no completion
+       * @return int The number of completion entries. 0 means no completion
        * entry.
        * @exception std::runtime_exception Error occured while polling the
        * completion queue.
        */
-      size_t poll(std::vector<ibv_wc>& wc_vec) { return poll(wc_vec.data(), wc_vec.size()); }
+      int poll(std::vector<ibv_wc>& wc_vec) { return poll(wc_vec.data(), wc_vec.size()); }
 
-      size_t poll(ibv_wc* wc, int count)
+      int poll(ibv_wc* wc, int count)
       {
          int rc = ::ibv_poll_cq(cq_.get(), count, wc);
          if (rc < 0) {

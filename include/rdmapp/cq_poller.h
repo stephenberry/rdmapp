@@ -34,7 +34,7 @@ namespace rdmapp
       {
          while (!stopped) {
             try {
-               auto nr_wc = cq->poll(wc_vec);
+               auto nr_wc = size_t(cq->poll(wc_vec));
                for (size_t i = 0; i < nr_wc; ++i) {
                   auto& wc = wc_vec[i];
                   RDMAPP_LOG_TRACE("polled cqe wr_id=%p status=%d", reinterpret_cast<void*>(wc.wr_id), wc.status);
