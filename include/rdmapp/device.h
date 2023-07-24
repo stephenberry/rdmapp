@@ -2,11 +2,16 @@
 
 #include <infiniband/verbs.h>
 
+#include <cassert>
 #include <cstdint>
+#include <cstdio>
+#include <cstring>
 #include <iterator>
+#include <stdexcept>
 #include <string>
 
 #include "rdmapp/detail/noncopyable.h"
+#include "rdmapp/error.h"
 
 namespace rdmapp
 {
@@ -17,8 +22,8 @@ namespace rdmapp
    struct device_list : public noncopyable
    {
      private:
-      struct ibv_device** devices_;
-      size_t nr_devices_;
+      struct ibv_device** devices_{};
+      size_t nr_devices_{};
 
      public:
       class iterator : public std::iterator<std::forward_iterator_tag, struct ibv_device*>
@@ -35,12 +40,30 @@ namespace rdmapp
          device_list::iterator& operator++();
          device_list::iterator& operator++(int);
       };
-      device_list();
+
+      device_list()
+      {
+         int32_t nr_devices = -1;
+         devices_ = ::ibv_get_device_list(&nr_devices);
+         if (nr_devices == 0) {
+            ::ibv_free_device_list(devices_);
+            throw std::runtime_error("no Infiniband devices found");
+         }
+         check_ptr(devices_, "failed to get Infiniband devices");
+         nr_devices_ = nr_devices;
+      }
+
       size_t size();
       struct ibv_device* at(size_t i);
       iterator begin();
       iterator end();
-      ~device_list();
+      
+      ~device_list()
+      {
+         if (devices_ != nullptr) {
+            ::ibv_free_device_list(devices_);
+         }
+      }
    };
 
    /**

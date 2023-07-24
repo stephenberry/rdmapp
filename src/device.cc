@@ -14,23 +14,6 @@
 
 namespace rdmapp {
 
-device_list::device_list() : devices_(nullptr), nr_devices_(0) {
-  int32_t nr_devices = -1;
-  devices_ = ::ibv_get_device_list(&nr_devices);
-  if (nr_devices == 0) {
-    ::ibv_free_device_list(devices_);
-    throw std::runtime_error("no Infiniband devices found");
-  }
-  check_ptr(devices_, "failed to get Infiniband devices");
-  nr_devices_ = nr_devices;
-}
-
-device_list::~device_list() {
-  if (devices_ != nullptr) {
-    ::ibv_free_device_list(devices_);
-  }
-}
-
 device_list::iterator::iterator(struct ibv_device **devices, size_t i)
     : i_(i), devices_(devices) {}
 
