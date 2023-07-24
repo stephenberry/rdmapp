@@ -92,22 +92,15 @@ namespace rdmapp
        * @exception std::runtime_exception Error occured while polling the
        * completion queue.
        */
-      size_t poll(std::vector<ibv_wc>& wc_vec) { return poll(&wc_vec[0], wc_vec.size()); }
+      size_t poll(std::vector<ibv_wc>& wc_vec) { return poll(wc_vec.data(), wc_vec.size()); }
 
-      template <class It>
-      size_t poll(It wc, int count)
+      size_t poll(ibv_wc* wc, int count)
       {
          int rc = ::ibv_poll_cq(cq_.get(), count, wc);
          if (rc < 0) {
             throw_with("failed to poll cq: %s (rc=%d)", strerror(rc), rc);
          }
          return rc;
-      }
-
-      template <int N>
-      size_t poll(std::array<ibv_wc, N>& wc_array)
-      {
-         return poll(&wc_array[0], N);
       }
    };
 
