@@ -55,7 +55,7 @@ namespace rdmapp
    {
       std::vector<uint8_t> buffer;
       auto it = std::back_inserter(buffer);
-      detail::serialize(pd_->device_ptr()->lid(), it);
+      detail::serialize(pd_->device->lid(), it);
       detail::serialize(qp_->qp_num, it);
       detail::serialize(sq_psn_, it);
       detail::serialize(static_cast<uint32_t>(user_data_.size()), it);
@@ -89,7 +89,7 @@ namespace rdmapp
       qp_ = ::ibv_create_qp(pd_->pd_.get(), &qp_init_attr);
       check_ptr(qp_, "failed to create qp");
       sq_psn_ = next_sq_psn.fetch_add(1);
-      RDMAPP_LOG_TRACE("created qp %p lid=%u qpn=%u psn=%u", reinterpret_cast<void*>(qp_), pd_->device_ptr()->lid(),
+      RDMAPP_LOG_TRACE("created qp %p lid=%u qpn=%u psn=%u", reinterpret_cast<void*>(qp_), pd_->device->lid(),
                        qp_->qp_num, sq_psn_);
    }
 
@@ -99,7 +99,7 @@ namespace rdmapp
       ::bzero(&qp_attr, sizeof(qp_attr));
       qp_attr.qp_state = IBV_QPS_INIT;
       qp_attr.pkey_index = 0;
-      qp_attr.port_num = pd_->device_ptr()->port_num;
+      qp_attr.port_num = pd_->device->port_num;
       qp_attr.qp_access_flags =
          IBV_ACCESS_REMOTE_WRITE | IBV_ACCESS_REMOTE_READ | IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_ATOMIC;
       try {
@@ -127,7 +127,7 @@ namespace rdmapp
       qp_attr.ah_attr.dlid = remote_lid;
       qp_attr.ah_attr.sl = 0;
       qp_attr.ah_attr.src_path_bits = 0;
-      qp_attr.ah_attr.port_num = pd_->device_ptr()->port_num;
+      qp_attr.ah_attr.port_num = pd_->device->port_num;
 
       try {
          check_rc(::ibv_modify_qp(qp_, &qp_attr,
@@ -348,14 +348,14 @@ namespace rdmapp
 
    qp::send_awaitable qp::fetch_and_add(const remote_mr& remote_mr, void* buffer, size_t length, uint64_t add)
    {
-      assert(pd_->device_ptr()->is_fetch_and_add_supported());
+      assert(pd_->device->is_fetch_and_add_supported());
       return qp::send_awaitable(this->shared_from_this(), buffer, length, IBV_WR_ATOMIC_FETCH_AND_ADD, remote_mr, add);
    }
 
    qp::send_awaitable qp::compare_and_swap(const remote_mr& remote_mr, void* buffer, size_t length, uint64_t compare,
                                            uint64_t swap)
    {
-      assert(pd_->device_ptr()->is_compare_and_swap_supported());
+      assert(pd_->device->is_compare_and_swap_supported());
       return qp::send_awaitable(this->shared_from_this(), buffer, length, IBV_WR_ATOMIC_CMP_AND_SWP, remote_mr, compare,
                                 swap);
    }
@@ -382,14 +382,14 @@ namespace rdmapp
 
    qp::send_awaitable qp::fetch_and_add(const remote_mr& remote_mr, std::shared_ptr<local_mr> local_mr, uint64_t add)
    {
-      assert(pd_->device_ptr()->is_fetch_and_add_supported());
+      assert(pd_->device->is_fetch_and_add_supported());
       return qp::send_awaitable(this->shared_from_this(), local_mr, IBV_WR_ATOMIC_FETCH_AND_ADD, remote_mr, add);
    }
 
    qp::send_awaitable qp::compare_and_swap(const remote_mr& remote_mr, std::shared_ptr<local_mr> local_mr,
                                            uint64_t compare, uint64_t swap)
    {
-      assert(pd_->device_ptr()->is_compare_and_swap_supported());
+      assert(pd_->device->is_compare_and_swap_supported());
       return qp::send_awaitable(this->shared_from_this(), local_mr, IBV_WR_ATOMIC_CMP_AND_SWP, remote_mr, compare,
                                 swap);
    }

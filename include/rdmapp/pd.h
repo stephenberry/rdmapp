@@ -32,10 +32,10 @@ namespace rdmapp
    // This class is an abstraction of a Protection Domain.
    struct pd : public noncopyable, public std::enable_shared_from_this<pd>
    {
-      std::shared_ptr<device> device_;
+      std::shared_ptr<rdmapp::device> device{};
       std::unique_ptr<ibv_pd, pd_deleter> pd_{};
 
-      pd(std::shared_ptr<rdmapp::device> device) : device_(device)
+      pd(std::shared_ptr<rdmapp::device> device) : device(device)
       {
          pd_.reset(::ibv_alloc_pd(device->ctx_));
          if (!pd_) {
@@ -43,13 +43,6 @@ namespace rdmapp
          }
          RDMAPP_LOG_TRACE("alloc pd %p", reinterpret_cast<void*>(pd_.get()));
       }
-
-      /**
-       * @brief Get the device object pointer.
-       *
-       * @return std::shared_ptr<device> The device object pointer.
-       */
-      std::shared_ptr<device> device_ptr() const { return device_; }
 
       /**
        * @brief Register a local memory region.
