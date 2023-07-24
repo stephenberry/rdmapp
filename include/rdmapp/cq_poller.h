@@ -18,7 +18,7 @@ namespace rdmapp
    struct cq_poller
    {
       std::shared_ptr<rdmapp::cq> cq{}; // The completion queue to poll.
-      std::shared_ptr<rdmapp::executor> executor{}; // The executor to use to process the completion entries.
+      std::shared_ptr<executor> exec{}; // The executor to use to process the completion entries.
       size_t batch_size = 16; // The number of completion entries to poll at a time.
       std::atomic<bool> stopped{false};
       std::thread poller_thread{&cq_poller::worker, this};
@@ -38,7 +38,7 @@ namespace rdmapp
                for (size_t i = 0; i < nr_wc; ++i) {
                   auto& wc = wc_vec[i];
                   RDMAPP_LOG_TRACE("polled cqe wr_id=%p status=%d", reinterpret_cast<void*>(wc.wr_id), wc.status);
-                  executor->process_wc(wc);
+                  exec->process_wc(wc);
                }
             }
             catch (std::runtime_error& e) {
