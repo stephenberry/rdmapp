@@ -34,27 +34,19 @@ namespace rdmapp
    };
 
    // This class is an abstraction of a Completion Queue.
-   struct completion_queue : public noncopyable
+   struct completion_queue
    {
-      inline ibv_cq* make_cq(std::shared_ptr<device> device, size_t num_cqe = 128)
+      std::shared_ptr<rdmapp::device> device{}; // The device to use.
+      size_t num_cqe{128}; // The number of completion entries to allocate.
+      std::unique_ptr<ibv_cq, cq_deleter> cq{make_cq(device, num_cqe)};
+
+      inline ibv_cq* make_cq(std::shared_ptr<rdmapp::device> device, size_t num_cqe = 128)
       {
          ibv_cq* cq = ::ibv_create_cq(device->ctx_, num_cqe, this, nullptr, 0);
          check_ptr(cq, "failed to create cq");
          RDMAPP_LOG_TRACE("created cq: %p", reinterpret_cast<void*>(cq));
          return cq;
       }
-
-      std::shared_ptr<rdmapp::device> device{};
-      size_t num_cqe{128};
-      std::unique_ptr<ibv_cq, cq_deleter> cq{make_cq(device, num_cqe)};
-      
-      /**
-       * @brief Construct a new cq object.
-       *
-       * @param device The device to use.
-       * @param num_cqe The number of completion entries to allocate.
-       */
-      completion_queue(std::shared_ptr<rdmapp::device> device, size_t num_cqe = 128) : device(device), num_cqe(num_cqe) {}
 
       /**
        * @brief Poll the completion queue.
