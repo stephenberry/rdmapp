@@ -54,30 +54,6 @@ struct ibv_device *device_list::at(size_t i) {
   return devices_[i];
 }
 
-void device::open_device(struct ibv_device *target, uint16_t port_num) {
-  device_ = target;
-  port_num_ = port_num;
-  ctx_ = ::ibv_open_device(device_);
-  check_ptr(ctx_, "failed to open device");
-  check_rc(::ibv_query_port(ctx_, port_num_, &port_attr_),
-           "failed to query port");
-  struct ibv_query_device_ex_input query = {};
-  check_rc(::ibv_query_device_ex(ctx_, &query, &device_attr_ex_),
-           "failed to query extended attributes");
-
-  auto link_layer = [&]() {
-    switch (port_attr_.link_layer) {
-    case IBV_LINK_LAYER_ETHERNET:
-      return "ethernet";
-    case IBV_LINK_LAYER_INFINIBAND:
-      return "infiniband";
-    }
-    return "unspecified";
-  }();
-  RDMAPP_LOG_DEBUG("opened Infiniband device lid=%d link_layer=%s",
-                   port_attr_.lid, link_layer);
-}
-
 device::device(struct ibv_device *target, uint16_t port_num) {
   assert(target != nullptr);
   open_device(target, port_num);
