@@ -28,16 +28,16 @@ namespace rdmapp
     * @tparam Tag Either `tags::mr::local` or `tags::mr::remote`.
     */
    template <class Tag>
-   class mr;
+   struct mr;
 
    /**
     * @brief Represents a local memory region.
     *
     */
    template <>
-   class mr<tags::mr::local> : public noncopyable
+   struct mr<tags::mr::local> : public noncopyable
    {
-      struct ibv_mr* mr_;
+      ibv_mr* mr_;
       std::shared_ptr<pd> pd_;
 
      public:
@@ -47,7 +47,7 @@ namespace rdmapp
        * @param pd The protection domain to use.
        * @param mr The ibverbs memory region handle.
        */
-      mr(std::shared_ptr<pd> pd, struct ibv_mr* mr) : mr_(mr), pd_(pd) {}
+      mr(std::shared_ptr<pd> pd, ibv_mr* mr) : mr_(mr), pd_(pd) {}
 
       /**
        * @brief Move construct a new mr object
@@ -134,22 +134,16 @@ namespace rdmapp
       uint32_t lkey() const { return mr_->lkey; }
    };
 
-   /**
-    * @brief Represents a remote memory region.
-    *
-    */
+   // Represents a remote memory region.
    template <>
-   class mr<tags::mr::remote>
+   struct mr<tags::mr::remote>
    {
-      void* addr_;
-      size_t length_;
-      uint32_t rkey_;
+      void* addr_{}; // The address of the remote memory region.
+      uint32_t length_{}; // The length of the remote memory region.
+      uint32_t rkey_{}; // The remote key of the memory region.
 
      public:
-      /**
-       * @brief The size of a serialized remote memory region.
-       *
-       */
+      // The size of a serialized remote memory region.
       static constexpr size_t kSerializedSize = sizeof(addr_) + sizeof(length_) + sizeof(rkey_);
 
       mr() = default;
