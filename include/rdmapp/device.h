@@ -51,7 +51,7 @@ namespace rdmapp
          nr_devices_ = nr_devices;
       }
 
-      size_t size();
+      size_t size() { return nr_devices_; }
       struct ibv_device* at(size_t i);
       iterator begin();
       iterator end();
@@ -101,7 +101,11 @@ namespace rdmapp
        * @param target The target device.
        * @param port_num The port number of the target device.
        */
-      device(ibv_device* target, uint16_t port_num = 1);
+      device(ibv_device* target, uint16_t port_num = 1)
+      {
+         assert(target != nullptr);
+         open_device(target, port_num);
+      }
 
       /**
        * @brief Construct a new device object.
@@ -109,7 +113,17 @@ namespace rdmapp
        * @param device_name The name of the target device.
        * @param port_num The port number of the target device.
        */
-      device(const std::string& device_name, uint16_t port_num = 1);
+      device(const std::string& device_name, uint16_t port_num = 1) : device_(nullptr), port_num_(0)
+      {
+         auto devices = device_list();
+         for (auto target : devices) {
+            if (::ibv_get_device_name(target) == device_name) {
+               open_device(target, port_num);
+               return;
+            }
+         }
+         throw_with("no device named %s found", device_name.c_str());
+      }
 
       /**
        * @brief Construct a new device object.

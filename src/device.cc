@@ -45,30 +45,11 @@ device_list::iterator device_list::end() {
   return iterator(devices_, nr_devices_);
 }
 
-size_t device_list::size() { return nr_devices_; }
-
 struct ibv_device *device_list::at(size_t i) {
   if (i >= nr_devices_) {
     throw std::out_of_range("out of range");
   }
   return devices_[i];
-}
-
-device::device(struct ibv_device *target, uint16_t port_num) {
-  assert(target != nullptr);
-  open_device(target, port_num);
-}
-
-device::device(std::string const &device_name, uint16_t port_num)
-    : device_(nullptr), port_num_(0) {
-  auto devices = device_list();
-  for (auto target : devices) {
-    if (::ibv_get_device_name(target) == device_name) {
-      open_device(target, port_num);
-      return;
-    }
-  }
-  throw_with("no device named %s found", device_name.c_str());
 }
 
 device::device(uint16_t device_num, uint16_t port_num)
