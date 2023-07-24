@@ -8,7 +8,7 @@
 #include <stdexcept>
 #include <thread>
 
-#include "rdmapp/cq.h"
+#include "rdmapp/completion_queue.h"
 #include "rdmapp/detail/debug.h"
 #include "rdmapp/executor.h"
 
@@ -17,7 +17,7 @@ namespace rdmapp
    // This class is used to poll a completion queue.
    struct cq_poller
    {
-      std::shared_ptr<rdmapp::cq> cq{}; // The completion queue to poll.
+      std::shared_ptr<rdmapp::completion_queue> cq{}; // The completion queue to poll.
       std::shared_ptr<executor> exec{}; // The executor to use to process the completion entries.
       size_t batch_size = 16; // The number of completion entries to poll at a time.
       std::atomic<bool> stopped{false};

@@ -25,21 +25,21 @@ namespace rdmapp
 {
 
    std::atomic<uint32_t> qp::next_sq_psn = 1;
-   qp::qp(uint16_t remote_lid, uint32_t remote_qpn, uint32_t remote_psn, std::shared_ptr<pd> pd, std::shared_ptr<cq> cq,
+   qp::qp(uint16_t remote_lid, uint32_t remote_qpn, uint32_t remote_psn, std::shared_ptr<pd> pd, std::shared_ptr<completion_queue> cq,
           std::shared_ptr<srq> srq)
       : qp(remote_lid, remote_qpn, remote_psn, pd, cq, cq, srq)
    {}
    qp::qp(uint16_t remote_lid, uint32_t remote_qpn, uint32_t remote_psn, std::shared_ptr<pd> pd,
-          std::shared_ptr<cq> recv_cq, std::shared_ptr<cq> send_cq, std::shared_ptr<srq> srq)
+          std::shared_ptr<completion_queue> recv_cq, std::shared_ptr<completion_queue> send_cq, std::shared_ptr<srq> srq)
       : qp(pd, recv_cq, send_cq, srq)
    {
       rtr(remote_lid, remote_qpn, remote_psn);
       rts();
    }
 
-   qp::qp(std::shared_ptr<rdmapp::pd> pd, std::shared_ptr<cq> cq, std::shared_ptr<srq> srq) : qp(pd, cq, cq, srq) {}
+   qp::qp(std::shared_ptr<rdmapp::pd> pd, std::shared_ptr<completion_queue> cq, std::shared_ptr<srq> srq) : qp(pd, cq, cq, srq) {}
 
-   qp::qp(std::shared_ptr<rdmapp::pd> pd, std::shared_ptr<cq> recv_cq, std::shared_ptr<cq> send_cq,
+   qp::qp(std::shared_ptr<rdmapp::pd> pd, std::shared_ptr<completion_queue> recv_cq, std::shared_ptr<completion_queue> send_cq,
           std::shared_ptr<srq> srq)
       : qp_(nullptr), pd_(pd), recv_cq_(recv_cq), send_cq_(send_cq), srq_(srq)
    {

@@ -7,7 +7,7 @@
 #include <optional>
 #include <string_view>
 
-#include "rdmapp/cq.h"
+#include "rdmapp/completion_queue.h"
 #include "rdmapp/detail/noncopyable.h"
 #include "rdmapp/detail/serdes.h"
 #include "rdmapp/device.h"
@@ -56,8 +56,8 @@ namespace rdmapp
       void (qp::*post_recv_fn)(const ibv_recv_wr& recv_wr, ibv_recv_wr*& bad_recv_wr) const;
 
       std::shared_ptr<pd> pd_;
-      std::shared_ptr<cq> recv_cq_;
-      std::shared_ptr<cq> send_cq_;
+      std::shared_ptr<completion_queue> recv_cq_;
+      std::shared_ptr<completion_queue> send_cq_;
       std::shared_ptr<srq> srq_;
       std::vector<uint8_t> user_data_;
 
@@ -139,7 +139,7 @@ namespace rdmapp
        * SRQ.
        */
       qp(const uint16_t remote_lid, const uint32_t remote_qpn, const uint32_t remote_psn, std::shared_ptr<pd> pd,
-         std::shared_ptr<cq> cq, std::shared_ptr<srq> srq = nullptr);
+         std::shared_ptr<completion_queue> cq, std::shared_ptr<srq> srq = nullptr);
 
       /**
        * @brief Construct a new qp object. The Queue Pair will be created with the
@@ -156,7 +156,7 @@ namespace rdmapp
        * SRQ.
        */
       qp(const uint16_t remote_lid, const uint32_t remote_qpn, const uint32_t remote_psn, std::shared_ptr<pd> pd,
-         std::shared_ptr<cq> recv_cq, std::shared_ptr<cq> send_cq, std::shared_ptr<srq> srq = nullptr);
+         std::shared_ptr<completion_queue> recv_cq, std::shared_ptr<completion_queue> send_cq, std::shared_ptr<srq> srq = nullptr);
 
       /**
        * @brief Construct a new qp object. The constructed Queue Pair will be in
@@ -167,7 +167,7 @@ namespace rdmapp
        * @param srq (Optional) If set, all recv work requests will be posted to this
        * SRQ.
        */
-      qp(std::shared_ptr<pd> pd, std::shared_ptr<cq> cq, std::shared_ptr<srq> srq = nullptr);
+      qp(std::shared_ptr<pd> pd, std::shared_ptr<completion_queue> cq, std::shared_ptr<srq> srq = nullptr);
 
       /**
        * @brief Construct a new qp object. The constructed Queue Pair will be in
@@ -179,7 +179,7 @@ namespace rdmapp
        * @param srq (Optional) If set, all recv work requests will be posted to this
        * SRQ.
        */
-      qp(std::shared_ptr<pd> pd, std::shared_ptr<cq> recv_cq, std::shared_ptr<cq> send_cq,
+      qp(std::shared_ptr<pd> pd, std::shared_ptr<completion_queue> recv_cq, std::shared_ptr<completion_queue> send_cq,
          std::shared_ptr<srq> srq = nullptr);
 
       /**

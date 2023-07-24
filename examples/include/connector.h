@@ -3,7 +3,7 @@
 #include "socket/event_loop.h"
 #include <memory>
 
-#include <rdmapp/cq.h>
+#include <rdmapp/completion_queue.h>
 #include <rdmapp/pd.h>
 #include <rdmapp/qp.h>
 #include <rdmapp/task.h>
@@ -19,8 +19,8 @@ namespace rdmapp {
  */
 class connector : public noncopyable {
   std::shared_ptr<pd> pd_;
-  std::shared_ptr<cq> recv_cq_;
-  std::shared_ptr<cq> send_cq_;
+  std::shared_ptr<completion_queue> recv_cq_;
+  std::shared_ptr<completion_queue> send_cq_;
   std::shared_ptr<srq> srq_;
   std::shared_ptr<socket::event_loop> loop_;
   std::string hostname_;
@@ -39,7 +39,7 @@ public:
    */
   connector(std::shared_ptr<socket::event_loop> loop,
             std::string const &hostname, uint16_t port, std::shared_ptr<pd> pd,
-            std::shared_ptr<cq> recv_cq, std::shared_ptr<cq> send_cq,
+            std::shared_ptr<completion_queue> recv_cq, std::shared_ptr<completion_queue> send_cq,
             std::shared_ptr<srq> srq = nullptr);
 
   /**
@@ -53,7 +53,7 @@ public:
    */
   connector(std::shared_ptr<socket::event_loop> loop,
             std::string const &hostname, uint16_t port, std::shared_ptr<pd> pd,
-            std::shared_ptr<cq> cq, std::shared_ptr<srq> srq = nullptr);
+            std::shared_ptr<completion_queue> cq, std::shared_ptr<srq> srq = nullptr);
 
   /**
    * @brief This function is used to connect to a remote endpoint and establish

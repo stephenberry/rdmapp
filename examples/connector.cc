@@ -21,7 +21,7 @@ namespace rdmapp
     * to the new Queue Pair.
     */
    static task<std::shared_ptr<qp>> from_tcp_connection(socket::tcp_connection& connection, std::shared_ptr<pd> pd,
-                                                        std::shared_ptr<cq> recv_cq, std::shared_ptr<cq> send_cq,
+                                                        std::shared_ptr<completion_queue> recv_cq, std::shared_ptr<completion_queue> send_cq,
                                                         std::shared_ptr<srq> srq = nullptr)
    {
       auto qp_ptr = std::make_shared<qp>(pd, recv_cq, send_cq, srq);
@@ -34,13 +34,13 @@ namespace rdmapp
    }
 
    connector::connector(std::shared_ptr<socket::event_loop> loop, const std::string& hostname, uint16_t port,
-                        std::shared_ptr<pd> pd, std::shared_ptr<cq> recv_cq, std::shared_ptr<cq> send_cq,
+                        std::shared_ptr<pd> pd, std::shared_ptr<completion_queue> recv_cq, std::shared_ptr<completion_queue> send_cq,
                         std::shared_ptr<srq> srq)
       : pd_(pd), recv_cq_(recv_cq), send_cq_(send_cq), srq_(srq), loop_(loop), hostname_(hostname), port_(port)
    {}
 
    connector::connector(std::shared_ptr<socket::event_loop> loop, const std::string& hostname, uint16_t port,
-                        std::shared_ptr<pd> pd, std::shared_ptr<cq> cq, std::shared_ptr<srq> srq)
+                        std::shared_ptr<pd> pd, std::shared_ptr<completion_queue> cq, std::shared_ptr<srq> srq)
       : connector(loop, hostname, port, pd, cq, cq, srq)
    {}
 

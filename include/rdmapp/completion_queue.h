@@ -34,7 +34,7 @@ namespace rdmapp
    };
 
    // This class is an abstraction of a Completion Queue.
-   struct cq : public noncopyable
+   struct completion_queue : public noncopyable
    {
       inline ibv_cq* make_cq(std::shared_ptr<device> device, size_t num_cqe = 128)
       {
@@ -57,7 +57,7 @@ namespace rdmapp
        * @param device The device to use.
        * @param num_cqe The number of completion entries to allocate.
        */
-      cq(std::shared_ptr<device> device, size_t num_cqe = 128) : device_(device), num_cqe(num_cqe) {}
+      completion_queue(std::shared_ptr<device> device, size_t num_cqe = 128) : device_(device), num_cqe(num_cqe) {}
 
       /**
        * @brief Poll the completion queue.

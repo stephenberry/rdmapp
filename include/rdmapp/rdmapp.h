@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rdmapp/cq.h"
+#include "rdmapp/completion_queue.h"
 #include "rdmapp/cq_poller.h"
 #include "rdmapp/device.h"
 #include "rdmapp/error.h"
