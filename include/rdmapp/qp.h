@@ -50,9 +50,9 @@ namespace rdmapp
    {
      private:
       static std::atomic<uint32_t> next_sq_psn;
-      struct ibv_qp* qp_;
-      struct ibv_srq* raw_srq_;
-      uint32_t sq_psn_;
+      ibv_qp* qp_{};
+      ibv_srq* raw_srq_{};
+      uint32_t sq_psn_{};
       void (qp::*post_recv_fn)(const ibv_recv_wr& recv_wr, ibv_recv_wr*& bad_recv_wr) const;
 
       std::shared_ptr<pd> pd_;
@@ -61,17 +61,10 @@ namespace rdmapp
       std::shared_ptr<srq> srq_;
       std::vector<uint8_t> user_data_;
 
-      /**
-       * @brief Creates a new Queue Pair. The Queue Pair will be in the RESET state.
-       *
-       */
+      // Creates a new Queue Pair. The Queue Pair will be in the RESET state.
       void create();
 
-      /**
-       * @brief Initializes the Queue Pair. The Queue Pair will be in the INIT
-       * state.
-       *
-       */
+      // Initializes the Queue Pair. The Queue Pair will be in the INIT state.
       void init();
 
       void destroy();
@@ -412,10 +405,7 @@ namespace rdmapp
        */
       void rtr(uint16_t remote_lid, uint32_t remote_qpn, uint32_t remote_psn);
 
-      /**
-       * @brief This function transitions the Queue Pair to the RTS state.
-       *
-       */
+      // This function transitions the Queue Pair to the RTS state.
       void rts();
 
      private:

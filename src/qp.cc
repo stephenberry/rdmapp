@@ -8,12 +8,9 @@
 #include <sys/socket.h>
 
 #include <algorithm>
-#include <cassert>
 #include <cerrno>
 #include <cstdio>
-#include <exception>
 #include <iterator>
-#include <optional>
 #include <utility>
 
 #include "rdmapp/cq_poller.h"
@@ -414,8 +411,8 @@ namespace rdmapp
 
       auto recv_sge = fill_local_sge(*local_mr_);
 
-      struct ibv_recv_wr recv_wr = {};
-      struct ibv_recv_wr* bad_recv_wr = nullptr;
+      ibv_recv_wr recv_wr{};
+      ibv_recv_wr* bad_recv_wr{};
       recv_wr.next = nullptr;
       recv_wr.num_sge = 1;
       recv_wr.wr_id = reinterpret_cast<uint64_t>(callback);
