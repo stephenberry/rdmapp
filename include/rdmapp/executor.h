@@ -17,10 +17,23 @@ namespace rdmapp
    struct executor
    {
      private:
-      using work_queue = detail::blocking_queue<struct ibv_wc>;
+      using work_queue = detail::blocking_queue<ibv_wc>;
       std::vector<std::thread> workers_;
       work_queue work_queue_;
-      void worker_fn(size_t worker_id);
+      void worker_fn(size_t worker_id)
+      {
+         try {
+            while (true) {
+               auto wc = work_queue_.pop();
+               auto cb = reinterpret_cast<callback_ptr>(wc.wr_id);
+               (*cb)(wc);
+               destroy_callback(cb);
+            }
+         }
+         catch (work_queue::queue_closed_error&) {
+            RDMAPP_LOG_TRACE("executor worker %lu exited", worker_id);
+         }
+      }
 
      public:
       using queue_closed_error = work_queue::queue_closed_error;
@@ -44,15 +57,21 @@ namespace rdmapp
        *
        * @param wc The completion entry to process.
        */
-      void process_wc(const ibv_wc& wc);
+      void process_wc(const ibv_wc& wc) { work_queue_.push(wc); }
 
       /**
        * @brief Shutdown the executor.
        *
        */
-      void shutdown();
+      void shutdown() { work_queue_.close(); }
 
-      ~executor();
+      ~executor()
+      {
+         shutdown();
+         for (auto&& worker : workers_) {
+            worker.join();
+         }
+      }
 
       /**
        * @brief Make a callback function that will be called when a completion entry
@@ -73,7 +92,7 @@ namespace rdmapp
        *
        * @param cb The callback function pointer.
        */
-      static void destroy_callback(callback_ptr cb);
+      static void destroy_callback(callback_ptr cb) { delete cb; }
    };
 
 } // namespace rdmapp
