@@ -21,8 +21,9 @@ namespace rdmapp
 
    struct cq_deleter
    {
-      void operator()(ibv_cq* cq_) const {
-        if (cq_) [[likely]] {
+      void operator()(ibv_cq* cq_) const
+      {
+         if (cq_) [[likely]] {
             if (auto rc = ::ibv_destroy_cq(cq_); rc != 0) [[unlikely]] {
                RDMAPP_LOG_ERROR("failed to destroy cq %p: %s", reinterpret_cast<void*>(cq_), strerror(errno));
             }
@@ -36,17 +37,18 @@ namespace rdmapp
    // This class is an abstraction of a Completion Queue.
    struct cq : public noncopyable
    {
-inline ibv_cq* make_cq(std::shared_ptr<device> device, size_t num_cqe = 128) {
+      inline ibv_cq* make_cq(std::shared_ptr<device> device, size_t num_cqe = 128)
+      {
          ibv_cq* cq_ = ::ibv_create_cq(device->ctx_, num_cqe, this, nullptr, 0);
          check_ptr(cq_, "failed to create cq");
          RDMAPP_LOG_TRACE("created cq: %p", reinterpret_cast<void*>(cq_));
          return cq_;
-   }
+      }
 
      private:
       std::shared_ptr<device> device_{};
-      size_t num_cqe{ 128 };
-      std::unique_ptr<ibv_cq, cq_deleter> cq_{ make_cq(device_, num_cqe) };
+      size_t num_cqe{128};
+      std::unique_ptr<ibv_cq, cq_deleter> cq_{make_cq(device_, num_cqe)};
       friend struct qp;
 
      public:
