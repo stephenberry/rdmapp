@@ -1,4 +1,7 @@
-FROM debian:latest
+# Use the official Ubuntu image as the base
+FROM ubuntu:latest
 
-RUN apt-get update && apt-get install -y libibverbs-dev librdmacm-dev libibumad-dev libmlx5-dev libmnl-dev \
-    build-essential git g++ gdb cmake make
+# Install required packages
+RUN apt-get update && \
+    apt-get install -y g++ gdb cmake make git libibverbs-dev && \
+    rm -rf /var/lib/apt/lists/*
