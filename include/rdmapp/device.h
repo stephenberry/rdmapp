@@ -10,15 +10,13 @@
 #include <stdexcept>
 #include <string>
 
+#include "rdmapp/detail/debug.h"
 #include "rdmapp/detail/noncopyable.h"
 #include "rdmapp/error.h"
 
 namespace rdmapp
 {
-
-   /**
-    * @brief This class holds a list of devices available on the system.
-    */
+   // This class holds a list of devices available on the system.
    struct device_list : public noncopyable
    {
      private:
@@ -57,7 +55,7 @@ namespace rdmapp
       struct ibv_device* at(size_t i);
       iterator begin();
       iterator end();
-      
+
       ~device_list()
       {
          if (devices_ != nullptr) {
@@ -66,19 +64,16 @@ namespace rdmapp
       }
    };
 
-   /**
-    * @brief This class is an abstraction of an Infiniband device.
-    *
-    */
+   // This class is an abstraction of an Infiniband device.
    struct device : public noncopyable
    {
-      struct ibv_device* device_;
-      struct ibv_context* ctx_;
-      struct ibv_port_attr port_attr_;
-      struct ibv_device_attr_ex device_attr_ex_;
+      ibv_device* device_{};
+      ibv_context* ctx_{};
+      ibv_port_attr port_attr_{};
+      ibv_device_attr_ex device_attr_ex_{};
 
       uint16_t port_num_;
-      void open_device(struct ibv_device* target, uint16_t port_num);
+      void open_device(ibv_device* target, uint16_t port_num);
 
       /**
        * @brief Construct a new device object.
@@ -86,7 +81,7 @@ namespace rdmapp
        * @param target The target device.
        * @param port_num The port number of the target device.
        */
-      device(struct ibv_device* target, uint16_t port_num = 1);
+      device(ibv_device* target, uint16_t port_num = 1);
 
       /**
        * @brief Construct a new device object.
@@ -134,7 +129,17 @@ namespace rdmapp
        */
       bool is_compare_and_swap_supported() const;
 
-      ~device();
+      ~device()
+      {
+         if (ctx_) [[likely]] {
+            if (auto rc = ::ibv_close_device(ctx_); rc != 0) [[unlikely]] {
+               RDMAPP_LOG_ERROR("failed to close device lid=%d: %s", port_attr_.lid, strerror(rc));
+            }
+            else {
+               RDMAPP_LOG_DEBUG("closed device lid=%d", port_attr_.lid);
+            }
+         }
+      }
    };
 
 } // namespace rdmapp

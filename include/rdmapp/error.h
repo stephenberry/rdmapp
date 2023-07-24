@@ -1,4 +1,5 @@
 #pragma once
+
 #include <infiniband/verbs.h>
 
 #include <cerrno>
@@ -9,7 +10,6 @@
 
 namespace rdmapp
 {
-
    constexpr size_t kErrorStringBufferSize = 1024;
 
    static inline void throw_with(const char* message) { throw std::runtime_error(message); }
@@ -101,5 +101,4 @@ namespace rdmapp
          throw_with("%s: %s (errno=%d)", message, ::strerror(errno), errno);
       }
    }
-
 } // namespace rdmapp

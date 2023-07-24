@@ -3,7 +3,6 @@
 #include <infiniband/verbs.h>
 
 #include <array>
-#include <cassert>
 #include <cstdio>
 #include <cstring>
 #include <memory>
