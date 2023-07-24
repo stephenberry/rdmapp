@@ -95,7 +95,15 @@ namespace rdmapp
        *
        * @return std::vector<uint8_t> The serialized memory region handle.
        */
-      std::vector<uint8_t> serialize() const;
+      std::vector<uint8_t> serialize() const
+      {
+         std::vector<uint8_t> buffer;
+         auto it = std::back_inserter(buffer);
+         detail::serialize(reinterpret_cast<uint64_t>(mr_->addr), it);
+         detail::serialize(mr_->length, it);
+         detail::serialize(mr_->rkey, it);
+         return buffer;
+      }
 
       /**
        * @brief Get the address of the memory region.
@@ -153,7 +161,7 @@ namespace rdmapp
        * @param length The length of the remote memory region.
        * @param rkey The remote key of the remote memory region.
        */
-      mr(void* addr, uint32_t length, uint32_t rkey);
+      mr(void* addr, uint32_t length, uint32_t rkey) : addr_(addr), length_(length), rkey_(rkey) {}
 
       /**
        * @brief Construct a new remote mr object copied from another
