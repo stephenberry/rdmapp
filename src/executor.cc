@@ -5,12 +5,6 @@
 
 namespace rdmapp {
 
-executor::executor(size_t nr_worker) {
-  for (size_t i = 0; i < nr_worker; ++i) {
-    workers_.emplace_back(&executor::worker_fn, this, i);
-  }
-}
-
 void executor::worker_fn(size_t worker_id) {
   try {
     while (true) {
