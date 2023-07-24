@@ -24,9 +24,9 @@ namespace rdmapp
        * @param pd The protection domain to use.
        * @param max_wr The maximum number of outstanding work requests.
        */
-      srq(std::shared_ptr<pd> pd, size_t max_wr = 1024) : srq_(nullptr), pd_(pd)
+      srq(std::shared_ptr<pd> pd, uint32_t max_wr = 1024) : srq_(nullptr), pd_(pd)
       {
-         struct ibv_srq_init_attr srq_init_attr;
+         ibv_srq_init_attr srq_init_attr{};
          srq_init_attr.srq_context = this;
          srq_init_attr.attr.max_sge = 1;
          srq_init_attr.attr.max_wr = max_wr;
@@ -38,7 +38,18 @@ namespace rdmapp
       }
 
       // Destroy the srq object and the associated shared receive queue.
-      ~srq();
+      ~srq()
+      {
+         if (srq_) [[likely]] {
+            if (auto rc = ::ibv_destroy_srq(srq_); rc != 0) [[unlikely]] {
+               RDMAPP_LOG_ERROR("failed to destroy srq %p: %s (rc=%d)", reinterpret_cast<void*>(srq_), strerror(rc),
+                                rc);
+            }
+            else {
+               RDMAPP_LOG_DEBUG("destroyed srq %p", reinterpret_cast<void*>(srq_));
+            }
+         }
+      }
    };
 
 } // namespace rdmapp
