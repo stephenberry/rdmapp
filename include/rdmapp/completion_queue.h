@@ -44,13 +44,10 @@ namespace rdmapp
          return cq;
       }
 
-     private:
       std::shared_ptr<rdmapp::device> device{};
       size_t num_cqe{128};
-      std::unique_ptr<ibv_cq, cq_deleter> cq_{make_cq(device, num_cqe)};
-      friend struct qp;
-
-     public:
+      std::unique_ptr<ibv_cq, cq_deleter> cq{make_cq(device, num_cqe)};
+      
       /**
        * @brief Construct a new cq object.
        *
@@ -70,16 +67,11 @@ namespace rdmapp
        */
       bool poll(ibv_wc& wc)
       {
-         if (auto rc = ::ibv_poll_cq(cq_.get(), 1, &wc); rc < 0) [[unlikely]] {
-            check_rc(-rc, "failed to poll cq");
+         auto rc = ::ibv_poll_cq(cq.get(), 1, &wc);
+         if (rc < 0) [[unlikely]] {
+            throw std::runtime_error("failed to poll cq");
          }
-         else if (rc == 0) {
-            return false;
-         }
-         else {
-            return true;
-         }
-         return false;
+         return rc;
       }
 
       /**
@@ -96,7 +88,7 @@ namespace rdmapp
 
       int poll(ibv_wc* wc, int count)
       {
-         int rc = ::ibv_poll_cq(cq_.get(), count, wc);
+         int rc = ::ibv_poll_cq(cq.get(), count, wc);
          if (rc < 0) {
             throw_with("failed to poll cq: %s (rc=%d)", strerror(rc), rc);
          }

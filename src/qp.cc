@@ -68,8 +68,8 @@ namespace rdmapp
       struct ibv_qp_init_attr qp_init_attr = {};
       ::bzero(&qp_init_attr, sizeof(qp_init_attr));
       qp_init_attr.qp_type = IBV_QPT_RC;
-      qp_init_attr.recv_cq = recv_cq_->cq_.get();
-      qp_init_attr.send_cq = send_cq_->cq_.get();
+      qp_init_attr.recv_cq = recv_cq_->cq.get();
+      qp_init_attr.send_cq = send_cq_->cq.get();
       qp_init_attr.cap.max_recv_sge = 1;
       qp_init_attr.cap.max_send_sge = 1;
       qp_init_attr.cap.max_recv_wr = 128;
