@@ -20,7 +20,7 @@ namespace rdmapp
       {};
    }
 
-   struct pd;
+   struct protected_domain;
 
    // A remote or local memory region.
    template <class Tag>
@@ -31,7 +31,7 @@ namespace rdmapp
    struct mr<tags::mr::local> : public noncopyable
    {
       ibv_mr* mr_;
-      std::shared_ptr<pd> pd_;
+      std::shared_ptr<protected_domain> pd_;
 
      public:
       /**
@@ -40,7 +40,7 @@ namespace rdmapp
        * @param pd The protection domain to use.
        * @param mr The ibverbs memory region handle.
        */
-      mr(std::shared_ptr<pd> pd, ibv_mr* mr) : mr_(mr), pd_(pd) {}
+      mr(std::shared_ptr<protected_domain> pd, ibv_mr* mr) : mr_(mr), pd_(pd) {}
 
       /**
        * @brief Move construct a new mr object

@@ -20,7 +20,7 @@ namespace rdmapp {
  */
 class acceptor : public noncopyable {
   std::unique_ptr<socket::tcp_listener> listener_;
-  std::shared_ptr<pd> pd_;
+  std::shared_ptr<protected_domain> pd_;
   std::shared_ptr<completion_queue> recv_cq_;
   std::shared_ptr<completion_queue> send_cq_;
   std::shared_ptr<srq> srq_;
@@ -37,7 +37,7 @@ public:
    * Pairs.
    */
   acceptor(std::shared_ptr<socket::event_loop> loop, uint16_t port,
-           std::shared_ptr<pd> pd, std::shared_ptr<completion_queue> cq,
+           std::shared_ptr<protected_domain> pd, std::shared_ptr<completion_queue> cq,
            std::shared_ptr<srq> srq = nullptr);
 
   /**
@@ -52,7 +52,7 @@ public:
    * Pairs.
    */
   acceptor(std::shared_ptr<socket::event_loop> loop, uint16_t port,
-           std::shared_ptr<pd> pd, std::shared_ptr<completion_queue> recv_cq,
+           std::shared_ptr<protected_domain> pd, std::shared_ptr<completion_queue> recv_cq,
            std::shared_ptr<completion_queue> send_cq, std::shared_ptr<srq> srq = nullptr);
 
   /**
@@ -67,7 +67,7 @@ public:
    * Pairs.
    */
   acceptor(std::shared_ptr<socket::event_loop> loop,
-           std::string const &hostname, uint16_t port, std::shared_ptr<pd> pd,
+           std::string const &hostname, uint16_t port, std::shared_ptr<protected_domain> pd,
            std::shared_ptr<completion_queue> cq, std::shared_ptr<srq> srq = nullptr);
 
   /**
@@ -83,7 +83,7 @@ public:
    * Pairs.
    */
   acceptor(std::shared_ptr<socket::event_loop> loop,
-           std::string const &hostname, uint16_t port, std::shared_ptr<pd> pd,
+           std::string const &hostname, uint16_t port, std::shared_ptr<protected_domain> pd,
            std::shared_ptr<completion_queue> recv_cq, std::shared_ptr<completion_queue> send_cq,
            std::shared_ptr<srq> srq = nullptr);
 

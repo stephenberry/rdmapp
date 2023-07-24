@@ -18,7 +18,7 @@ namespace rdmapp {
  *
  */
 class connector : public noncopyable {
-  std::shared_ptr<pd> pd_;
+  std::shared_ptr<protected_domain> pd_;
   std::shared_ptr<completion_queue> recv_cq_;
   std::shared_ptr<completion_queue> send_cq_;
   std::shared_ptr<srq> srq_;
@@ -38,7 +38,7 @@ public:
    * @param srq (Optional) The shared receive queue to use for new Queue Pairs.
    */
   connector(std::shared_ptr<socket::event_loop> loop,
-            std::string const &hostname, uint16_t port, std::shared_ptr<pd> pd,
+            std::string const &hostname, uint16_t port, std::shared_ptr<protected_domain> pd,
             std::shared_ptr<completion_queue> recv_cq, std::shared_ptr<completion_queue> send_cq,
             std::shared_ptr<srq> srq = nullptr);
 
@@ -52,7 +52,7 @@ public:
    * @param srq (Optional) The shared receive queue to use for new Queue Pairs.
    */
   connector(std::shared_ptr<socket::event_loop> loop,
-            std::string const &hostname, uint16_t port, std::shared_ptr<pd> pd,
+            std::string const &hostname, uint16_t port, std::shared_ptr<protected_domain> pd,
             std::shared_ptr<completion_queue> cq, std::shared_ptr<srq> srq = nullptr);
 
   /**

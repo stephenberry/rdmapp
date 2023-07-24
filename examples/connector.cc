@@ -20,7 +20,7 @@ namespace rdmapp
     * @return task<std::shared_ptr<qp>> A coroutine that returns a shared pointer
     * to the new Queue Pair.
     */
-   static task<std::shared_ptr<qp>> from_tcp_connection(socket::tcp_connection& connection, std::shared_ptr<pd> pd,
+   static task<std::shared_ptr<qp>> from_tcp_connection(socket::tcp_connection& connection, std::shared_ptr<protected_domain> pd,
                                                         std::shared_ptr<completion_queue> recv_cq, std::shared_ptr<completion_queue> send_cq,
                                                         std::shared_ptr<srq> srq = nullptr)
    {
@@ -34,13 +34,13 @@ namespace rdmapp
    }
 
    connector::connector(std::shared_ptr<socket::event_loop> loop, const std::string& hostname, uint16_t port,
-                        std::shared_ptr<pd> pd, std::shared_ptr<completion_queue> recv_cq, std::shared_ptr<completion_queue> send_cq,
+                        std::shared_ptr<protected_domain> pd, std::shared_ptr<completion_queue> recv_cq, std::shared_ptr<completion_queue> send_cq,
                         std::shared_ptr<srq> srq)
       : pd_(pd), recv_cq_(recv_cq), send_cq_(send_cq), srq_(srq), loop_(loop), hostname_(hostname), port_(port)
    {}
 
    connector::connector(std::shared_ptr<socket::event_loop> loop, const std::string& hostname, uint16_t port,
-                        std::shared_ptr<pd> pd, std::shared_ptr<completion_queue> cq, std::shared_ptr<srq> srq)
+                        std::shared_ptr<protected_domain> pd, std::shared_ptr<completion_queue> cq, std::shared_ptr<srq> srq)
       : connector(loop, hostname, port, pd, cq, cq, srq)
    {}
 

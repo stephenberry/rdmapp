@@ -55,7 +55,7 @@ namespace rdmapp
       uint32_t sq_psn_{};
       void (qp::*post_recv_fn)(const ibv_recv_wr& recv_wr, ibv_recv_wr*& bad_recv_wr) const;
 
-      std::shared_ptr<pd> pd_;
+      std::shared_ptr<protected_domain> pd_;
       std::shared_ptr<completion_queue> recv_cq_;
       std::shared_ptr<completion_queue> send_cq_;
       std::shared_ptr<srq> srq_;
@@ -138,7 +138,7 @@ namespace rdmapp
        * @param srq (Optional) If set, all recv work requests will be posted to this
        * SRQ.
        */
-      qp(const uint16_t remote_lid, const uint32_t remote_qpn, const uint32_t remote_psn, std::shared_ptr<pd> pd,
+      qp(const uint16_t remote_lid, const uint32_t remote_qpn, const uint32_t remote_psn, std::shared_ptr<protected_domain> pd,
          std::shared_ptr<completion_queue> cq, std::shared_ptr<srq> srq = nullptr);
 
       /**
@@ -155,7 +155,7 @@ namespace rdmapp
        * @param srq (Optional) If set, all recv work requests will be posted to this
        * SRQ.
        */
-      qp(const uint16_t remote_lid, const uint32_t remote_qpn, const uint32_t remote_psn, std::shared_ptr<pd> pd,
+      qp(const uint16_t remote_lid, const uint32_t remote_qpn, const uint32_t remote_psn, std::shared_ptr<protected_domain> pd,
          std::shared_ptr<completion_queue> recv_cq, std::shared_ptr<completion_queue> send_cq, std::shared_ptr<srq> srq = nullptr);
 
       /**
@@ -167,7 +167,7 @@ namespace rdmapp
        * @param srq (Optional) If set, all recv work requests will be posted to this
        * SRQ.
        */
-      qp(std::shared_ptr<pd> pd, std::shared_ptr<completion_queue> cq, std::shared_ptr<srq> srq = nullptr);
+      qp(std::shared_ptr<protected_domain> pd, std::shared_ptr<completion_queue> cq, std::shared_ptr<srq> srq = nullptr);
 
       /**
        * @brief Construct a new qp object. The constructed Queue Pair will be in
@@ -179,7 +179,7 @@ namespace rdmapp
        * @param srq (Optional) If set, all recv work requests will be posted to this
        * SRQ.
        */
-      qp(std::shared_ptr<pd> pd, std::shared_ptr<completion_queue> recv_cq, std::shared_ptr<completion_queue> send_cq,
+      qp(std::shared_ptr<protected_domain> pd, std::shared_ptr<completion_queue> recv_cq, std::shared_ptr<completion_queue> send_cq,
          std::shared_ptr<srq> srq = nullptr);
 
       /**
@@ -393,7 +393,7 @@ namespace rdmapp
        *
        * @return std::shared_ptr<pd> Pointer to the PD.
        */
-      std::shared_ptr<pd> pd_ptr() const;
+      std::shared_ptr<protected_domain> pd_ptr() const;
       ~qp();
 
       /**
