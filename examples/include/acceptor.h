@@ -22,7 +22,7 @@ namespace rdmapp
       std::shared_ptr<protected_domain> pd_;
       std::shared_ptr<completion_queue> recv_cq_;
       std::shared_ptr<completion_queue> send_cq_;
-      std::shared_ptr<srq> srq_;
+      std::shared_ptr<shared_receive_queue> srq_;
 
      public:
       /**
@@ -36,7 +36,7 @@ namespace rdmapp
        * Pairs.
        */
       acceptor(std::shared_ptr<socket::event_loop> loop, uint16_t port, std::shared_ptr<protected_domain> pd,
-               std::shared_ptr<completion_queue> cq, std::shared_ptr<srq> srq = nullptr);
+               std::shared_ptr<completion_queue> cq, std::shared_ptr<shared_receive_queue> srq = nullptr);
 
       /**
        * @brief Construct a new acceptor object.
@@ -51,7 +51,7 @@ namespace rdmapp
        */
       acceptor(std::shared_ptr<socket::event_loop> loop, uint16_t port, std::shared_ptr<protected_domain> pd,
                std::shared_ptr<completion_queue> recv_cq, std::shared_ptr<completion_queue> send_cq,
-               std::shared_ptr<srq> srq = nullptr);
+               std::shared_ptr<shared_receive_queue> srq = nullptr);
 
       /**
        * @brief Construct a new acceptor object.
@@ -66,7 +66,7 @@ namespace rdmapp
        */
       acceptor(std::shared_ptr<socket::event_loop> loop, const std::string& hostname, uint16_t port,
                std::shared_ptr<protected_domain> pd, std::shared_ptr<completion_queue> cq,
-               std::shared_ptr<srq> srq = nullptr);
+               std::shared_ptr<shared_receive_queue> srq = nullptr);
 
       /**
        * @brief Construct a new acceptor object.
@@ -82,7 +82,7 @@ namespace rdmapp
        */
       acceptor(std::shared_ptr<socket::event_loop> loop, const std::string& hostname, uint16_t port,
                std::shared_ptr<protected_domain> pd, std::shared_ptr<completion_queue> recv_cq,
-               std::shared_ptr<completion_queue> send_cq, std::shared_ptr<srq> srq = nullptr);
+               std::shared_ptr<completion_queue> send_cq, std::shared_ptr<shared_receive_queue> srq = nullptr);
 
       /**
        * @brief This function is used to accept an incoming connection and queue

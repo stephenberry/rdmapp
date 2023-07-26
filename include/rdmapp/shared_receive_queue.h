@@ -23,8 +23,7 @@ namespace rdmapp
       }
    };
 
-   // Shared Receive Queue.
-   struct srq
+   struct shared_receive_queue
    {
       std::shared_ptr<protected_domain> pd_{};
       std::unique_ptr<ibv_srq> srq_{};
@@ -35,7 +34,7 @@ namespace rdmapp
        * @param pd The protection domain to use.
        * @param max_wr The maximum number of outstanding work requests.
        */
-      srq(std::shared_ptr<protected_domain> pd, uint32_t max_wr = 1024) : pd_(pd)
+      shared_receive_queue(std::shared_ptr<protected_domain> pd, uint32_t max_wr = 1024) : pd_(pd)
       {
          ibv_srq_init_attr srq_init_attr{};
          srq_init_attr.srq_context = this;

@@ -11,7 +11,7 @@
 #include "rdmapp/detail/serdes.h"
 #include "rdmapp/device.h"
 #include "rdmapp/protected_domain.h"
-#include "rdmapp/srq.h"
+#include "rdmapp/shared_receive_queue.h"
 #include "rdmapp/task.h"
 
 namespace rdmapp
@@ -53,7 +53,7 @@ namespace rdmapp
       std::shared_ptr<protected_domain> pd_;
       std::shared_ptr<completion_queue> recv_cq_;
       std::shared_ptr<completion_queue> send_cq_;
-      std::shared_ptr<srq> srq_;
+      std::shared_ptr<shared_receive_queue> srq_;
       std::vector<uint8_t> user_data_;
 
       // Creates a new Queue Pair. The Queue Pair will be in the RESET state.
@@ -134,7 +134,7 @@ namespace rdmapp
        * SRQ.
        */
       queue_pair(const uint16_t remote_lid, const uint32_t remote_qpn, const uint32_t remote_psn, std::shared_ptr<protected_domain> pd,
-         std::shared_ptr<completion_queue> cq, std::shared_ptr<srq> srq = nullptr);
+         std::shared_ptr<completion_queue> cq, std::shared_ptr<shared_receive_queue> srq = nullptr);
 
       /**
        * @brief Construct a new qp object. The Queue Pair will be created with the
@@ -151,7 +151,7 @@ namespace rdmapp
        * SRQ.
        */
       queue_pair(const uint16_t remote_lid, const uint32_t remote_qpn, const uint32_t remote_psn, std::shared_ptr<protected_domain> pd,
-         std::shared_ptr<completion_queue> recv_cq, std::shared_ptr<completion_queue> send_cq, std::shared_ptr<srq> srq = nullptr);
+         std::shared_ptr<completion_queue> recv_cq, std::shared_ptr<completion_queue> send_cq, std::shared_ptr<shared_receive_queue> srq = nullptr);
 
       /**
        * @brief Construct a new qp object. The constructed Queue Pair will be in
@@ -162,7 +162,7 @@ namespace rdmapp
        * @param srq (Optional) If set, all recv work requests will be posted to this
        * SRQ.
        */
-      queue_pair(std::shared_ptr<protected_domain> pd, std::shared_ptr<completion_queue> cq, std::shared_ptr<srq> srq = nullptr);
+      queue_pair(std::shared_ptr<protected_domain> pd, std::shared_ptr<completion_queue> cq, std::shared_ptr<shared_receive_queue> srq = nullptr);
 
       /**
        * @brief Construct a new qp object. The constructed Queue Pair will be in
@@ -175,7 +175,7 @@ namespace rdmapp
        * SRQ.
        */
       queue_pair(std::shared_ptr<protected_domain> pd, std::shared_ptr<completion_queue> recv_cq, std::shared_ptr<completion_queue> send_cq,
-         std::shared_ptr<srq> srq = nullptr);
+         std::shared_ptr<shared_receive_queue> srq = nullptr);
 
       /**
        * @brief This function is used to post a send work request to the Queue Pair.

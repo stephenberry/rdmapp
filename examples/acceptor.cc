@@ -7,7 +7,7 @@
 #include <rdmapp/device.h>
 #include <rdmapp/error.h>
 #include <rdmapp/queue_pair.h>
-#include <rdmapp/srq.h>
+#include <rdmapp/shared_receive_queue.h>
 #include <strings.h>
 #include <sys/epoll.h>
 #include <sys/socket.h>
@@ -31,23 +31,23 @@ namespace rdmapp
 {
 
    acceptor::acceptor(std::shared_ptr<socket::event_loop> loop, uint16_t port, std::shared_ptr<protected_domain> pd,
-                      std::shared_ptr<completion_queue> cq, std::shared_ptr<srq> srq)
+                      std::shared_ptr<completion_queue> cq, std::shared_ptr<shared_receive_queue> srq)
       : acceptor(loop, port, pd, cq, cq, srq)
    {}
 
    acceptor::acceptor(std::shared_ptr<socket::event_loop> loop, uint16_t port, std::shared_ptr<protected_domain> pd,
-                      std::shared_ptr<completion_queue> recv_cq, std::shared_ptr<completion_queue> send_cq, std::shared_ptr<srq> srq)
+                      std::shared_ptr<completion_queue> recv_cq, std::shared_ptr<completion_queue> send_cq, std::shared_ptr<shared_receive_queue> srq)
       : acceptor(loop, "", port, pd, recv_cq, send_cq, srq)
    {}
 
    acceptor::acceptor(std::shared_ptr<socket::event_loop> loop, const std::string& hostname, uint16_t port,
-                      std::shared_ptr<protected_domain> pd, std::shared_ptr<completion_queue> cq, std::shared_ptr<srq> srq)
+                      std::shared_ptr<protected_domain> pd, std::shared_ptr<completion_queue> cq, std::shared_ptr<shared_receive_queue> srq)
       : acceptor(loop, hostname, port, pd, cq, cq, srq)
    {}
 
    acceptor::acceptor(std::shared_ptr<socket::event_loop> loop, const std::string& hostname, uint16_t port,
                       std::shared_ptr<protected_domain> pd, std::shared_ptr<completion_queue> recv_cq, std::shared_ptr<completion_queue> send_cq,
-                      std::shared_ptr<srq> srq)
+                      std::shared_ptr<shared_receive_queue> srq)
       : listener_(std::make_unique<socket::tcp_listener>(loop, hostname, port)),
         pd_(pd),
         recv_cq_(recv_cq),

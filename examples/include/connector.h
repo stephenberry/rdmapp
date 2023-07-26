@@ -21,7 +21,7 @@ class connector : public noncopyable {
   std::shared_ptr<protected_domain> pd_;
   std::shared_ptr<completion_queue> recv_cq_;
   std::shared_ptr<completion_queue> send_cq_;
-  std::shared_ptr<srq> srq_;
+  std::shared_ptr<shared_receive_queue> srq_;
   std::shared_ptr<socket::event_loop> loop_;
   std::string hostname_;
   uint16_t port_;
@@ -40,7 +40,7 @@ public:
   connector(std::shared_ptr<socket::event_loop> loop,
             std::string const &hostname, uint16_t port, std::shared_ptr<protected_domain> pd,
             std::shared_ptr<completion_queue> recv_cq, std::shared_ptr<completion_queue> send_cq,
-            std::shared_ptr<srq> srq = nullptr);
+            std::shared_ptr<shared_receive_queue> srq = nullptr);
 
   /**
    * @brief Construct a new connector object.
@@ -53,7 +53,7 @@ public:
    */
   connector(std::shared_ptr<socket::event_loop> loop,
             std::string const &hostname, uint16_t port, std::shared_ptr<protected_domain> pd,
-            std::shared_ptr<completion_queue> cq, std::shared_ptr<srq> srq = nullptr);
+            std::shared_ptr<completion_queue> cq, std::shared_ptr<shared_receive_queue> srq = nullptr);
 
   /**
    * @brief This function is used to connect to a remote endpoint and establish

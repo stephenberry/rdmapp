@@ -6,5 +6,5 @@
 #include "rdmapp/error.h"
 #include "rdmapp/protected_domain.h"
 #include "rdmapp/queue_pair.h"
-#include "rdmapp/srq.h"
+#include "rdmapp/shared_receive_queue.h"
 #include "rdmapp/task.h"

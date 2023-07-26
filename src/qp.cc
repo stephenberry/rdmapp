@@ -19,28 +19,28 @@
 #include "rdmapp/error.h"
 #include "rdmapp/executor.h"
 #include "rdmapp/protected_domain.h"
-#include "rdmapp/srq.h"
+#include "rdmapp/shared_receive_queue.h"
 
 namespace rdmapp
 {
 
    std::atomic<uint32_t> queue_pair::next_sq_psn = 1;
    queue_pair::queue_pair(uint16_t remote_lid, uint32_t remote_qpn, uint32_t remote_psn, std::shared_ptr<protected_domain> pd, std::shared_ptr<completion_queue> cq,
-          std::shared_ptr<srq> srq)
+          std::shared_ptr<shared_receive_queue> srq)
       : queue_pair(remote_lid, remote_qpn, remote_psn, pd, cq, cq, srq)
    {}
    queue_pair::queue_pair(uint16_t remote_lid, uint32_t remote_qpn, uint32_t remote_psn, std::shared_ptr<protected_domain> pd,
-          std::shared_ptr<completion_queue> recv_cq, std::shared_ptr<completion_queue> send_cq, std::shared_ptr<srq> srq)
+          std::shared_ptr<completion_queue> recv_cq, std::shared_ptr<completion_queue> send_cq, std::shared_ptr<shared_receive_queue> srq)
       : queue_pair(pd, recv_cq, send_cq, srq)
    {
       rtr(remote_lid, remote_qpn, remote_psn);
       rts();
    }
 
-   queue_pair::queue_pair(std::shared_ptr<rdmapp::protected_domain> pd, std::shared_ptr<completion_queue> cq, std::shared_ptr<srq> srq) : queue_pair(pd, cq, cq, srq) {}
+   queue_pair::queue_pair(std::shared_ptr<rdmapp::protected_domain> pd, std::shared_ptr<completion_queue> cq, std::shared_ptr<shared_receive_queue> srq) : queue_pair(pd, cq, cq, srq) {}
 
    queue_pair::queue_pair(std::shared_ptr<rdmapp::protected_domain> pd, std::shared_ptr<completion_queue> recv_cq, std::shared_ptr<completion_queue> send_cq,
-          std::shared_ptr<srq> srq)
+          std::shared_ptr<shared_receive_queue> srq)
       : qp_(nullptr), pd_(pd), recv_cq_(recv_cq), send_cq_(send_cq), srq_(srq)
    {
       create();

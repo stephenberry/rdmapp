@@ -22,7 +22,7 @@ namespace rdmapp
     */
    static task<std::shared_ptr<queue_pair>> from_tcp_connection(socket::tcp_connection& connection, std::shared_ptr<protected_domain> pd,
                                                         std::shared_ptr<completion_queue> recv_cq, std::shared_ptr<completion_queue> send_cq,
-                                                        std::shared_ptr<srq> srq = nullptr)
+                                                        std::shared_ptr<shared_receive_queue> srq = nullptr)
    {
       auto qp_ptr = std::make_shared<queue_pair>(pd, recv_cq, send_cq, srq);
       co_await send_qp(*qp_ptr, connection);
@@ -35,12 +35,12 @@ namespace rdmapp
 
    connector::connector(std::shared_ptr<socket::event_loop> loop, const std::string& hostname, uint16_t port,
                         std::shared_ptr<protected_domain> pd, std::shared_ptr<completion_queue> recv_cq, std::shared_ptr<completion_queue> send_cq,
-                        std::shared_ptr<srq> srq)
+                        std::shared_ptr<shared_receive_queue> srq)
       : pd_(pd), recv_cq_(recv_cq), send_cq_(send_cq), srq_(srq), loop_(loop), hostname_(hostname), port_(port)
    {}
 
    connector::connector(std::shared_ptr<socket::event_loop> loop, const std::string& hostname, uint16_t port,
-                        std::shared_ptr<protected_domain> pd, std::shared_ptr<completion_queue> cq, std::shared_ptr<srq> srq)
+                        std::shared_ptr<protected_domain> pd, std::shared_ptr<completion_queue> cq, std::shared_ptr<shared_receive_queue> srq)
       : connector(loop, hostname, port, pd, cq, cq, srq)
    {}
 
