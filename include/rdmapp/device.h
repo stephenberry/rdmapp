@@ -90,6 +90,9 @@ namespace rdmapp
       }
 
       // Get the lid of the device.
+      // In the context of InfiniBand networking, a Local Identifier (LID) is a unique 16-bit identifier assigned to
+      // each InfiniBand Host Channel Adapter (HCA) in a network. It helps identify individual nodes in the InfiniBand
+      // fabric and plays a crucial role in routing data packets to their destinations.
       uint16_t lid() const { return port_attr.lid; }
 
       bool is_fetch_and_add_supported() const { return attr_ex.orig_attr.atomic_cap != IBV_ATOMIC_NONE; }
@@ -105,4 +108,4 @@ namespace rdmapp
          }
       }
    };
-} // namespace rdmapp
+}

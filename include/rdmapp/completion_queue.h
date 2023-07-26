@@ -36,8 +36,6 @@ namespace rdmapp
        * @param wc If any, this will be filled with a completion entry.
        * @return true If there is a completion entry.
        * @return false If there is no completion entry.
-       * @exception std::runtime_exception Error occured while polling the
-       * completion queue.
        */
       bool poll(ibv_wc& wc)
       {
@@ -53,7 +51,6 @@ namespace rdmapp
        *
        * @param wc_vec If any, this will be filled with completion entries up to the size of the vector.
        * @return int The number of completion entries. 0 means no completion entry.
-       * @exception std::runtime_exception occured while polling the completion queue.
        */
       int poll(std::vector<ibv_wc>& wc_vec) { return poll(wc_vec.data(), wc_vec.size()); }
 
