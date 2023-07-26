@@ -27,4 +27,18 @@ namespace rdmapp
    inline constexpr void format_throw(std::format_string<Args...> fmt, Args&&... args) {
       throw std::runtime_error(std::format(fmt, std::forward<Args>(args)...));
    }
+
+   inline void check_ptr(void* ptr, const std::string_view message)
+   {
+      if (ptr == nullptr) [[unlikely]] {
+         format_throw("{}: {} (errno={})", message, std::strerror(errno), errno);
+      }
+   }
+
+   template <class T>
+   inline void check_ptr(const std::shared_ptr<T>& ptr, const char* message) {
+      if (ptr == nullptr) [[unlikely]] {
+         throw std::runtime_error(message);
+      }
+   }
 }

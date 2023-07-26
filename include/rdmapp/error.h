@@ -88,12 +88,6 @@ namespace rdmapp
          throw_with("%s: %s (status=%d)", message, errorstr, status);
       }
    }
-   static inline void check_ptr(void* ptr, const char* message)
-   {
-      if (ptr == nullptr) [[unlikely]] {
-         throw_with("%s: %s (errno=%d)", message, ::strerror(errno), errno);
-      }
-   }
 
    static inline void check_errno(int rc, const char* message)
    {
