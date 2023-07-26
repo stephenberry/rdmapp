@@ -40,7 +40,7 @@ namespace rdmapp::detail
          cv.notify_all();
       }
 
-      private:
+     private:
       std::mutex mtx{};
       std::condition_variable cv{};
       std::queue<T> queue{};
