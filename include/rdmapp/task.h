@@ -7,6 +7,7 @@
 #include <future>
 
 #include "rdmapp/detail/debug.h"
+#include "rdmapp/detail/util.h"
 
 namespace rdmapp
 {

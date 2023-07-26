@@ -1,6 +1,7 @@
 #pragma once
 
 #include <infiniband/verbs.h>
+#include <stdexcept>
 
 #include "rdmapp/detail/debug.h"
 #include "rdmapp/detail/util.h"
@@ -9,18 +10,13 @@
 
 namespace rdmapp
 {
-   struct queue_pair;
-
    struct cq_deleter
    {
       void operator()(ibv_cq* cq) const
       {
          if (cq) [[likely]] {
             if (auto rc = ::ibv_destroy_cq(cq); rc != 0) [[unlikely]] {
-               RDMAPP_LOG_ERROR("failed to destroy cq %p: %s", reinterpret_cast<void*>(cq), strerror(errno));
-            }
-            else {
-               RDMAPP_LOG_TRACE("destroyed cq: %p", reinterpret_cast<void*>(cq));
+               throw std::runtime_error(std::format("failed to destroy cq {}: {}", reinterpret_cast<void*>(cq), std::strerror(errno)));
             }
          }
       }

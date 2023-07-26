@@ -4,15 +4,17 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include <format>
 #include <memory>
 #include <span>
 #include <stdexcept>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace rdmapp
 {
-    struct noncopyable
+   struct noncopyable
    {
       noncopyable() = default;
       noncopyable(noncopyable&&) = default;

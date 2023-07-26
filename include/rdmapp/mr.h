@@ -8,6 +8,7 @@
 
 #include "rdmapp/detail/debug.h"
 #include "rdmapp/detail/serdes.h"
+#include "rdmapp/detail/util.h"
 
 namespace rdmapp
 {
