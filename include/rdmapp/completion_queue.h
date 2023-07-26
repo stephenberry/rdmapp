@@ -16,7 +16,7 @@ namespace rdmapp
       {
          if (cq) [[likely]] {
             if (auto rc = ::ibv_destroy_cq(cq); rc != 0) [[unlikely]] {
-               throw std::runtime_error(std::format("failed to destroy cq {}: {}", reinterpret_cast<void*>(cq), std::strerror(errno)));
+               format_throw("failed to destroy cq {}: {}", reinterpret_cast<void*>(cq), strerror(errno));
             }
          }
       }
@@ -70,7 +70,7 @@ namespace rdmapp
       {
          int rc = ::ibv_poll_cq(cq.get(), count, wc);
          if (rc < 0) {
-            throw_with("failed to poll cq: %s (rc=%d)", strerror(rc), rc);
+            format_throw("failed to poll cq: {} (rc={})", strerror(rc), rc);
          }
          return rc;
       }

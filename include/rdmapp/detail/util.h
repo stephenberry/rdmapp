@@ -22,4 +22,9 @@ namespace rdmapp
       noncopyable& operator=(const noncopyable&) = delete;
       noncopyable& operator=(noncopyable&&) = default;
    };
+
+   template <class... Args>
+   inline constexpr void format_throw(std::format_string<Args...> fmt, Args&&... args) {
+      throw std::runtime_error(std::format(fmt, std::forward<Args>(args)...));
+   }
 }
