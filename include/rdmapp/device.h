@@ -53,7 +53,7 @@ namespace rdmapp
       ibv_device* device_ptr{};
       uint16_t port_num{};
       ibv_context* ctx{};
-      ibv_port_attr port_attr_{};
+      ibv_port_attr port_attr{};
       ibv_device_attr_ex attr_ex{};
 
       void open_device(ibv_device* target, uint16_t port_num_in)
@@ -62,7 +62,7 @@ namespace rdmapp
          port_num = port_num_in;
          ctx = ::ibv_open_device(device_ptr);
          check_ptr(ctx, "failed to open device");
-         check_rc(::ibv_query_port(ctx, port_num, &port_attr_), "failed to query port");
+         check_rc(::ibv_query_port(ctx, port_num, &port_attr), "failed to query port");
          ibv_query_device_ex_input query{};
          check_rc(::ibv_query_device_ex(ctx, &query, &attr_ex), "failed to query extended attributes");
       }
@@ -90,7 +90,7 @@ namespace rdmapp
       }
 
       // Get the lid of the device.
-      uint16_t lid() const { return port_attr_.lid; }
+      uint16_t lid() const { return port_attr.lid; }
 
       bool is_fetch_and_add_supported() const { return attr_ex.orig_attr.atomic_cap != IBV_ATOMIC_NONE; }
 
@@ -100,7 +100,7 @@ namespace rdmapp
       {
          if (ctx) {
             if (auto rc = ::ibv_close_device(ctx); rc != 0) {
-               format_throw("failed to close device lid={}: {}", port_attr_.lid, strerror(rc));
+               format_throw("failed to close device lid={}: {}", port_attr.lid, strerror(rc));
             }
          }
       }
