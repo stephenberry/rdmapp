@@ -15,6 +15,7 @@
 #include "rdmapp/error.h"
 
 #include "rdmapp/detail/debug.h"
+#include "rdmapp/detail/util.h"
 
 namespace rdmapp {
 namespace socket {

@@ -2,9 +2,7 @@
 
 #include <infiniband/verbs.h>
 
-#include "rdmapp/detail/debug.h"
 #include "rdmapp/detail/util.h"
-#include "rdmapp/error.h"
 
 namespace rdmapp
 {
@@ -18,7 +16,7 @@ namespace rdmapp
       }
    };
 
-   // This class holds a list of devices available on the system.
+   // Devices available on the system.
    struct device_list final
    {
       std::span<ibv_device*> devices{};
@@ -26,7 +24,7 @@ namespace rdmapp
 
       device_list()
       {
-         int32_t n_devices = -1;
+         int n_devices = -1;
          device_list_ptr.reset(::ibv_get_device_list(&n_devices));
          if (n_devices == 0) {
             throw std::runtime_error("no Infiniband devices found");
@@ -38,11 +36,22 @@ namespace rdmapp
       }
    };
 
-   // This class is an abstraction of an Infiniband device.
-   struct device : public noncopyable
+   inline std::string_view link_layer(const ibv_port_attr& port_attr_)
+   {
+      switch (port_attr_.link_layer) {
+      case IBV_LINK_LAYER_ETHERNET:
+         return "ethernet";
+      case IBV_LINK_LAYER_INFINIBAND:
+         return "infiniband";
+      }
+      return "unspecified";
+   }
+
+   // Infiniband device.
+   struct device final
    {
       ibv_device* device_ptr{};
-      uint16_t port_num{}; // port number
+      uint16_t port_num{};
       ibv_context* ctx{};
       ibv_port_attr port_attr_{};
       ibv_device_attr_ex attr_ex{};
@@ -56,17 +65,6 @@ namespace rdmapp
          check_rc(::ibv_query_port(ctx, port_num, &port_attr_), "failed to query port");
          ibv_query_device_ex_input query{};
          check_rc(::ibv_query_device_ex(ctx, &query, &attr_ex), "failed to query extended attributes");
-
-         auto link_layer = [&]() {
-            switch (port_attr_.link_layer) {
-            case IBV_LINK_LAYER_ETHERNET:
-               return "ethernet";
-            case IBV_LINK_LAYER_INFINIBAND:
-               return "infiniband";
-            }
-            return "unspecified";
-         }();
-         RDMAPP_LOG_DEBUG("opened Infiniband device lid=%d link_layer=%s", port_attr_.lid, link_layer);
       }
 
       device(const std::string& device_name, uint16_t port_num = 1)
@@ -78,7 +76,7 @@ namespace rdmapp
                return;
             }
          }
-         throw_with("no device named %s found", device_name.c_str());
+         format_throw("no device named {} found", device_name);
       }
 
       device(uint16_t device_num, uint16_t port_num = 1)
@@ -86,10 +84,7 @@ namespace rdmapp
          auto list = device_list();
          auto devices = list.devices;
          if (device_num >= devices.size()) {
-            char buffer[error_string_buffer_size]{0};
-            ::snprintf(buffer, sizeof(buffer), "requested device number %d out of range, %lu devices available",
-                       device_num, devices.size());
-            throw std::invalid_argument(buffer);
+            format_throw("requested device number {} out of range, {} available", device_num, devices.size());
          }
          open_device(devices[device_num], port_num);
       }
@@ -103,12 +98,9 @@ namespace rdmapp
 
       ~device()
       {
-         if (ctx) [[likely]] {
-            if (auto rc = ::ibv_close_device(ctx); rc != 0) [[unlikely]] {
-               RDMAPP_LOG_ERROR("failed to close device lid=%d: %s", port_attr_.lid, strerror(rc));
-            }
-            else {
-               RDMAPP_LOG_DEBUG("closed device lid=%d", port_attr_.lid);
+         if (ctx) {
+            if (auto rc = ::ibv_close_device(ctx); rc != 0) {
+               format_throw("failed to close device lid={}: {}", port_attr_.lid, strerror(rc));
             }
          }
       }

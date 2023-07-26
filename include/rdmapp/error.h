@@ -22,13 +22,6 @@ namespace rdmapp
       throw std::runtime_error(buffer);
    }
 
-   static inline void check_rc(int rc, const char* message)
-   {
-      if (rc != 0) [[unlikely]] {
-         throw_with("%s: %s (rc=%d)", message, ::strerror(rc), rc);
-      }
-   }
-
    static inline void check_wc_status(enum ibv_wc_status status, const char* message)
    {
       if (status != IBV_WC_SUCCESS) [[unlikely]] {
@@ -86,13 +79,6 @@ namespace rdmapp
             return "UNKNOWN_ERROR";
          }();
          throw_with("%s: %s (status=%d)", message, errorstr, status);
-      }
-   }
-
-   static inline void check_errno(int rc, const char* message)
-   {
-      if (rc < 0) [[unlikely]] {
-         throw_with("%s: %s (errno=%d)", message, ::strerror(errno), errno);
       }
    }
 } // namespace rdmapp

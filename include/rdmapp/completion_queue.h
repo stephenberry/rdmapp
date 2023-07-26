@@ -6,7 +6,7 @@
 
 namespace rdmapp
 {
-   struct cq_deleter
+   struct cq_deleter final
    {
       void operator()(ibv_cq* cq) const
       {
@@ -18,7 +18,7 @@ namespace rdmapp
       }
    };
 
-   struct completion_queue
+   struct completion_queue final
    {
       std::shared_ptr<rdmapp::device> device{}; // The device to use.
       size_t num_cqe{128}; // The number of completion entries to allocate.

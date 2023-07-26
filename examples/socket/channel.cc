@@ -10,6 +10,7 @@
 #include <unistd.h>
 
 #include <rdmapp/detail/debug.h>
+#include <rdmapp/detail/util.h>
 #include <rdmapp/error.h>
 
 namespace rdmapp {

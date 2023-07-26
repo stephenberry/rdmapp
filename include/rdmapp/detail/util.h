@@ -41,4 +41,18 @@ namespace rdmapp
          throw std::runtime_error(message);
       }
    }
+
+   inline void check_errno(int rc, const char* message)
+   {
+      if (rc < 0) [[unlikely]] {
+         format_throw("{}: {} (errno={})", message, std::strerror(errno), errno);
+      }
+   }
+
+   static inline void check_rc(int rc, const char* message)
+   {
+      if (rc != 0) [[unlikely]] {
+         format_throw("{}: {} (rc={})", message, std::strerror(rc), rc);
+      }
+   }
 }
